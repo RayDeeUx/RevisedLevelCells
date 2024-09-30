@@ -1,0 +1,118 @@
+{
+	"geode": "3.4.0",
+	"gd": {
+		"win": "2.206",
+		"mac": "2.206",
+		"android": "2.206"
+	},
+	"id": "raydeeux.revisedlevelcells",
+	"name": "RevisedLevelCells",
+	"version": "v1.0.0",
+	"developer": "RayDeeUx",
+	"description": "Revise level cells just a smidge.",
+	"repository": "https://github.com/RayDeeUx/RevisedLevelCells",
+	"settings": {
+		"enabled": {
+			"name": "Enabled",
+			"description": "Toggles the mod.",
+			"type": "bool",
+			"default": true
+		},
+		"compactEditorLevels": {
+			"name": "Compact Editor Levels",
+			"description": "<cl>Original code by Cvolton.</c>\n\nCompacts your editor levels in \"My Levels\" menu.\n\n<cy>Due to how this feature is implemented, enabling this option also disables selecting multiple levels for deletion.</c>",
+			"type": "bool",
+			"default": true
+		},
+		"levelDescriptions": {
+			"name": "Level Descriptions",
+			"description": "View level descriptions without opening the level's page.\n\n<cy>Does not apply to levels in the \"My Levels\" menu.</c>",
+			"type": "bool",
+			"default": true
+		},
+		"recolorSongLabels": {
+			"name": "Recolor Song Labels",
+			"description": "<cl>Original idea inspired by Xiyxs.</c>\n\nColor song labels based on their source (Default, Newgrounds, Music Library, NCS).",
+			"type": "bool",
+			"default": true
+		},
+		"defaultSongColor": {
+			"name": "Default Songs Color",
+			"description": "Set this to <cj>(40, 210, 255)</c> to keep the original color for levels that use default songs.",
+			"type": "rgba",
+			"default": [40, 210, 255, 255]
+		},
+		"newgroundsColor": {
+			"name": "Newgrounds Songs Color",
+			"description": "Set this to <cd>(255, 130, 255)</c> to keep the original color for songs from Newgrounds.",
+			"type": "rgba",
+			"default": [255, 130, 255, 255]
+		},
+		"musicLibraryColor": {
+			"name": "Music Library Songs Color",
+			"type": "rgba",
+			"default": [130, 255, 255, 255]
+		},
+		"recolorNCS": {
+			"name": "Also Recolor NCS Songs",
+			"description": "Differentiate NCS Songs from Music Library songs.",
+			"type": "bool",
+			"default": true
+		},
+		"ncsColor": {
+			"name": "NCS Songs Color",
+			"type": "rgba",
+			"default": [255, 255, 130, 255]
+		},
+		"cycleThroughColors": {
+			"name": "Cycle Through Above Colors",
+			"description": "If a level contains multiple songs, cycle through the colors you've selected above.\n\n<cy>This will only happen when viewing online levels you have saved and GD hasn't forgotten about.</c>",
+			"type": "bool",
+			"default": true
+		},
+		"songCycleSpeed": {
+			"name": "Cycling through Colors Speed",
+			"description": "Sets how quickly (lower value)/slowly (higher value) the song label changes color if <cl>\"Cycle Through Above Colors\"</c> is enabled.",
+			"type": "float",
+			"default": 1.5,
+			"min": 0.01,
+			"max": 2.00,
+			"control": {
+				"input": true,
+				"slider": true,
+				"arrows": false,
+				"big-arrows": false,
+				"arrow-step": 0,
+				"big-arrow-step": 0,
+				"slider-step": 0.01
+			}
+		},
+		"recolorLevelNameFeaturedScore": {
+			"name": "Recolor Level Name based on Featured Status",
+			"description": "Recolor a level's name based on its Featured status (Rated, <cy>Featured</c>, <co>Epic</c>, <cp>Legendary</c>, <cj>Mythic</c>).\n\nWill fade between white (the default color) and the corresponding color for its featured status.",
+			"type": "bool",
+			"default": false
+		},
+		"blendingText": {
+			"name": "Readable Labels (Better Blending)",
+			"description": "Some mods add additional text to a LevelCell. Some of these texts uses the <cl>chatFont font (the one seen in comments)</c>, which makes them difficult to read against thumbnails from <cl>cdc's Level Thumbnails mod</c>. Enabling this makes these texts more readable.",
+			"type": "bool",
+			"default": true
+		}
+	},
+	"dependencies": [
+		{
+			"id": "geode.node-ids",
+			"version": ">=1.14.0",
+			"importance": "required"
+		}
+	],
+	"issues": {
+		"url": "https://discord.com/channels/911701438269386882/1205523212444639292",
+		"info": "Ping me <cl>(@erymanthus)</c> in the Geode SDK Discord server's <cl>#help</c> channel if you need help. <cr>DMs are NOT accepted.</c>"
+	},
+	"links": {
+		"community": "https://discord.gg/WqZBYdBWZW",
+		"homepage": "https://discord.com/channels/822510988409831486/1206371881222144020"
+	}
+}
