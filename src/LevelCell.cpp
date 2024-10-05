@@ -9,9 +9,11 @@ using namespace geode::prelude;
 class $modify(MyLevelCell, LevelCell) {
 	struct Fields {
 		Manager* manager = Manager::getSharedInstance();
+		bool blendingApplied = false;
 	};
 	static void onModify(auto & self)
 	{
+		(void) self.setHookPriority("LevelCell::draw", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::onClick", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadFromLevel", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadLocalLevelCell", PREFERRED_HOOK_PRIO);
@@ -185,14 +187,18 @@ class $modify(MyLevelCell, LevelCell) {
 			CCAction* repeat = CCRepeatForever::create(sequence);
 			levelNameLabel->runAction(repeat);
 		}
-		if (Utils::getBool("blendingText")) {
-			for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
-				if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
-					if (std::string(label->getFntFile()) == "chatFont.fnt") {
-						label->setBlendFunc({GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA});
-						label->setColor({255, 255, 255});
-						label->setOpacity(255);
-					}
+	}
+	void draw() {
+		LevelCell::draw();
+		if (m_fields->blendingApplied) return;
+		m_fields->blendingApplied = true;
+		if (!Utils::getBool("blendingText")) return;
+		for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
+			if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
+				if (std::string(label->getFntFile()) == "chatFont.fnt") {
+					label->setBlendFunc({GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA});
+					label->setColor({255, 255, 255});
+					label->setOpacity(255);
 				}
 			}
 		}

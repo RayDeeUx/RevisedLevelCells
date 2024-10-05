@@ -71,7 +71,7 @@
 			"default": true
 		},
 		"songCycleSpeed": {
-			"name": "Cycling through Colors Speed",
+			"name": "Color Cycling Speed",
 			"description": "Sets how quickly (lower value)/slowly (higher value) the song label changes color if <cl>\"Cycle Through Above Colors\"</c> is enabled.",
 			"type": "float",
 			"default": 1.5,
