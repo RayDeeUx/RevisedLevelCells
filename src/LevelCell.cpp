@@ -114,9 +114,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void onClick(CCObject* sender) {
 		// hooking this function is necessary in order for the "view" button to work while compact mode is active in "my levels"
 		if (this->m_level->m_levelType == GJLevelType::Editor && Utils::modEnabled() && Utils::getBool("compactEditorLevels")) {
-			const auto scene = CCScene::create();
-			scene->addChild(EditLevelLayer::create(m_level));
-			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, scene));
+			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, EditLevelLayer::scene(m_level)));
 		} else { LevelCell::onClick(sender); }
 	}
 	void loadLocalLevelCell() {
