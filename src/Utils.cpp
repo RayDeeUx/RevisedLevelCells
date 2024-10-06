@@ -27,7 +27,7 @@ namespace Utils {
 
 	bool isSceneRunning(const std::string& sceneName) { return CCDirector::get()->getRunningScene()->getChildByID(sceneName); }
 
-	bool doesNodeExist(const std::string& parentNodeName, const std::string& nodeName) { return CCDirector::get()->getRunningScene()->getChildByIDRecursive(parentNodeName)->getChildByIDRecursive(nodeName); }
+	bool doesNodeExist(const std::string& parentNodeName, const std::string& nodeName) { return CCDirector::get()->getRunningScene()->getChildByIDRecursive(parentNodeName) && CCDirector::get()->getRunningScene()->getChildByIDRecursive(parentNodeName)->getChildByIDRecursive(nodeName); }
 
 	bool doesNodeExistNoParent(const std::string& nodeName) { return CCDirector::get()->getRunningScene()->getChildByIDRecursive(nodeName); }
 }

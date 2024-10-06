@@ -17,7 +17,7 @@ class $modify(MyLevelCell, LevelCell) {
 		(void) self.setHookPriority("LevelCell::onClick", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadFromLevel", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadLocalLevelCell", PREFERRED_HOOK_PRIO);
-		(void) self.setHookPriority("LevelCell::loadCustomLevelCell", PREFERRED_HOOK_PRIO);
+		(void) self.setHookPriority("LevelCell::loadCustomLevelCell", -PREFERRED_HOOK_PRIO);
 	}
 	void onShowLevelDesc(CCObject* sender) {
 		const auto theLevel = this->m_level;
@@ -26,7 +26,7 @@ class $modify(MyLevelCell, LevelCell) {
 			if (Utils::doesNodeExistNoParent("provider-popup") || Utils::doesNodeExistNoParent("dogotrigger.level_history/provider-popup")) {
 				levelDesc = "(No description available. You're probably viewing this level from a level history mod; there's not much more you can do from here.)";
 			} else if (Utils::doesNodeExist("LevelBrowserLayer", "saved-menu") || Utils::isSceneRunning("LevelListLayer")) {
-				levelDesc = "(No description visible. Try downloading the level, then exit and re-enter this menu to view this level's description again.)";
+				levelDesc = "(No description visible. Try downloading the level, then exit and re-enter this level list to view this level's description again.)";
 			} else {
 				levelDesc = "(No description provided)";
 			}
@@ -127,6 +127,51 @@ class $modify(MyLevelCell, LevelCell) {
 			}
 		}
 	}
+	void applyLevelDescriptions(CCLayer* mainLayer) {
+		const auto viewButton = mainLayer->getChildByIDRecursive("view-button");
+		if (!viewButton) return;
+		const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+		infoButton->setScale(.6f);
+		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
+		descButton->setID("level-desc-button"_spr);
+#ifndef GEODE_IS_MOBILE
+		descButton->setPosition({
+			viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
+			viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
+		});
+#else
+		if (!Utils::doesNodeExistNoParent("DailyLevelPage")) {
+			if (const auto mainLayer = getChildByID("main-layer")) {
+				descButton->setPosition({
+					mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
+					mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
+				});
+			}
+		} else {
+			descButton->setPosition({
+				viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
+				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
+			});
+		}
+#endif
+		getChildByIDRecursive("main-menu")->addChild(descButton);
+	}
+	void moveNode(bool isProgressNode, CCNode* node, int units = -20) {
+		if (!Utils::modEnabled()) return;
+		if (!isProgressNode) return node->setPositionX(node->getPositionX() + static_cast<float>(units));
+		if (!m_mainMenu) return;
+		auto viewButton = m_mainMenu->getChildByIDRecursive("view-button");
+		if (!viewButton) return;
+		CCPoint positionMaybe = convertToWorldSpace(viewButton->getPosition());
+		node->setPosition(
+			positionMaybe
+		);
+	}
+	void removePlacement(CCLayer* mainLayer) {
+		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists")) return;
+		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
+		this->m_level->m_unkInt = 0;
+	}
 	void onClick(CCObject* sender) {
 		// hooking this function is necessary in order for the "view" button to work while compact mode is active in "my levels"
 		if (this->m_level->m_levelType == GJLevelType::Editor && Utils::modEnabled() && Utils::getBool("compactEditorLevels")) {
@@ -141,38 +186,10 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void loadCustomLevelCell() {
 		LevelCell::loadCustomLevelCell();
-		if (!Utils::modEnabled()) { return; }
+		if (!Utils::modEnabled() || !m_mainMenu) { return; }
 		const auto mainLayer = this->m_mainLayer;
 		if (!mainLayer || !m_level) { return; }
-		if (Utils::getBool("levelDescriptions")) {
-			if (const auto viewButton = mainLayer->getChildByIDRecursive("view-button")) {
-				const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-				infoButton->setScale(.6f);
-				auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
-				descButton->setID("level-desc-button"_spr);
-				#ifndef GEODE_IS_MOBILE
-				descButton->setPosition({
-					viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
-					viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
-				});
-				#else
-				if (!Utils::isSceneRunningRecursive("DailyLevelPage")) {
-					if (const auto mainLayer = getChildByID("main-layer")) {
-						descButton->setPosition({
-							mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-							mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
-						});
-					}
-				} else {
-					descButton->setPosition({
-						viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
-						viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
-					});
-				}
-				#endif
-				getChildByIDRecursive("main-menu")->addChild(descButton);
-			}
-		}
+		if (Utils::getBool("removePlacement")) removePlacement(mainLayer);
 	}
 	void loadFromLevel(GJGameLevel* level) {
 		LevelCell::loadFromLevel(level);
@@ -181,6 +198,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!mainLayer || !m_level) { return; }
 		if (Utils::getBool("recolorSongLabels")) applySongRecoloring(mainLayer, m_level);
 		if (Utils::getBool("recolorLevelNameFeaturedScore")) applyFeatureStateRecoloring(mainLayer);
+		if (Utils::getBool("levelDescriptions")) applyLevelDescriptions(mainLayer);
 	}
 	void draw() {
 		LevelCell::draw();
