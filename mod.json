@@ -98,6 +98,12 @@
 			"description": "Some mods add additional text to a LevelCell. Some of these texts uses the <cl>chatFont font (the one seen in comments)</c>, which makes them difficult to read against thumbnails from <cl>cdc's Level Thumbnails mod</c>. Enabling this makes these texts more readable.",
 			"type": "bool",
 			"default": true
+		},
+		"removePlacement": {
+			"name": "Remove Level List Placement",
+			"description": "<cl>Adapted from code by CVolton.</c>\n\nRemove the placement numbers from LevelCells when viewing level lists.\n<cy>Much like Cvolton's code, this feature will move the percentage label to the left of the</c> <cl>\"View\"</c> <cy>button.</c>",
+			"type": "bool",
+			"default": true
 		}
 	},
 	"dependencies": [

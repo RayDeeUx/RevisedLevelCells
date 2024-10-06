@@ -40,11 +40,30 @@ class $modify(MyLevelCell, LevelCell) {
 			420.f
 		)->show();
 	}
-
 	void addColorToSequence(CCArray *arrayOfSequences, ccColor4B color) {
 		arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
 	}
-
+	void applyFeatureStateRecoloring(CCLayer* mainLayer) {
+		const auto diffContainerNode = mainLayer->getChildByIDRecursive("difficulty-container");
+		if (!diffContainerNode) { return; }
+		const auto diffSpriteNode = diffContainerNode->getChildByIDRecursive("difficulty-sprite");
+		if (!diffSpriteNode) { return; }
+		const auto diffSprite = typeinfo_cast<GJDifficultySprite*>(diffSpriteNode);
+		if (!diffSprite) { return; }
+		const auto levelNameLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("level-name"));
+		const auto featureState = diffSprite->m_featureState;
+		if (!levelNameLabel || featureState == GJFeatureState::None) { return; }
+		const auto levelNameLabelColor = levelNameLabel->getColor();
+		const auto defaultColor = CCTintTo::create(1.5f, levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
+		auto color = ccColor3B(50, 200, 255);
+		if (featureState == ::GJFeatureState::Featured) color = ccColor3B(255, 255, 0);
+		else if (featureState == ::GJFeatureState::Epic) color = ccColor3B(255, 90, 75);
+		else if (featureState == ::GJFeatureState::Legendary) color = ccColor3B(255, 0, 255);
+		const auto featuredColor = CCTintTo::create(1.5f, color.r, color.g, color.b);
+		CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
+		CCAction* repeat = CCRepeatForever::create(sequence);
+		levelNameLabel->runAction(repeat);
+	}
 	void applySongRecoloring(cocos2d::CCLayer* mainLayer, GJGameLevel* level) {
 		if (const auto songLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("song-name"))) {
 			std::string songIDs = level->m_songIDs;
@@ -94,16 +113,13 @@ class $modify(MyLevelCell, LevelCell) {
 					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
 				}
 				if (defaultSongs > 0 || defaultSongID < 1) {
-					ccColor4B color = Utils::getColorAlpha("defaultSongColor");
-					arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
+					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
 				}
 				if (ngSongs > 0) {
-					ccColor4B color = Utils::getColorAlpha("newgroundsColor");
-					arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
+					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
 				}
 				if (musicLibrarySongs > 0) {
-					ccColor4B color = Utils::getColorAlpha("musicLibraryColor");
-					arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
+					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("musicLibraryColor"));
 				}
 				CCActionInterval* sequence = CCSequence::create(arrayOfSequences);
 				CCAction* repeat = CCRepeatForever::create(sequence);
@@ -164,27 +180,7 @@ class $modify(MyLevelCell, LevelCell) {
 		const auto mainLayer = this->m_mainLayer;
 		if (!mainLayer || !m_level) { return; }
 		if (Utils::getBool("recolorSongLabels")) applySongRecoloring(mainLayer, m_level);
-		if (Utils::getBool("recolorLevelNameFeaturedScore")) {
-			const auto diffContainerNode = mainLayer->getChildByIDRecursive("difficulty-container");
-			if (!diffContainerNode) { return; }
-			const auto diffSpriteNode = diffContainerNode->getChildByIDRecursive("difficulty-sprite");
-			if (!diffSpriteNode) { return; }
-			const auto diffSprite = typeinfo_cast<GJDifficultySprite*>(diffSpriteNode);
-			if (!diffSprite) { return; }
-			const auto levelNameLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("level-name"));
-			const auto featureState = diffSprite->m_featureState;
-			if (!levelNameLabel || featureState == GJFeatureState::None) { return; }
-			const auto levelNameLabelColor = levelNameLabel->getColor();
-			const auto defaultColor = CCTintTo::create(1.5f, levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
-			auto color = ccColor3B(50, 200, 255);
-			if (featureState == ::GJFeatureState::Featured) color = ccColor3B(255, 255, 0);
-			else if (featureState == ::GJFeatureState::Epic) color = ccColor3B(255, 90, 75);
-			else if (featureState == ::GJFeatureState::Legendary) color = ccColor3B(255, 0, 255);
-			const auto featuredColor = CCTintTo::create(1.5f, color.r, color.g, color.b);
-			CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
-			CCAction* repeat = CCRepeatForever::create(sequence);
-			levelNameLabel->runAction(repeat);
-		}
+		if (Utils::getBool("recolorLevelNameFeaturedScore")) applyFeatureStateRecoloring(mainLayer);
 	}
 	void draw() {
 		LevelCell::draw();
