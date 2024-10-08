@@ -134,12 +134,12 @@ class $modify(MyLevelCell, LevelCell) {
 		infoButton->setScale(.6f);
 		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
-#ifndef GEODE_IS_MOBILE
+		#ifndef GEODE_IS_MOBILE
 		descButton->setPosition({
 			viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
 			viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
 		});
-#else
+		#else
 		if (!Utils::doesNodeExistNoParent("DailyLevelPage")) {
 			if (const auto mainLayer = getChildByID("main-layer")) {
 				descButton->setPosition({
@@ -153,19 +153,8 @@ class $modify(MyLevelCell, LevelCell) {
 				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
 			});
 		}
-#endif
+		#endif
 		getChildByIDRecursive("main-menu")->addChild(descButton);
-	}
-	void moveNode(bool isProgressNode, CCNode* node, int units = -20) {
-		if (!Utils::modEnabled()) return;
-		if (!isProgressNode) return node->setPositionX(node->getPositionX() + static_cast<float>(units));
-		if (!m_mainMenu) return;
-		auto viewButton = m_mainMenu->getChildByIDRecursive("view-button");
-		if (!viewButton) return;
-		CCPoint positionMaybe = convertToWorldSpace(viewButton->getPosition());
-		node->setPosition(
-			positionMaybe
-		);
 	}
 	void removePlacement(CCLayer* mainLayer) {
 		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists")) return;
