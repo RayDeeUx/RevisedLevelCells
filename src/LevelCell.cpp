@@ -170,7 +170,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void loadLocalLevelCell() {
 		LevelCell::loadLocalLevelCell();
 		if (!(Utils::modEnabled() && Utils::getBool("compactEditorLevels"))) { return; }
-		if (const auto localLevelname = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) { localLevelname->limitLabelWidth(200.f, .6f, .01f); }
+		if (const auto localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) { localLevelName->limitLabelWidth(200.f, .6f, .01f); }
 		if (const auto mainLayer = typeinfo_cast<CCLayer*>(getChildByIDRecursive("main-layer"))) { mainLayer->setPositionY(-3.f); }
 	}
 	void loadCustomLevelCell() {
@@ -187,7 +187,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!mainLayer || !m_level) { return; }
 		if (Utils::getBool("recolorSongLabels")) applySongRecoloring(mainLayer, m_level);
 		if (Utils::getBool("recolorLevelNameFeaturedScore")) applyFeatureStateRecoloring(mainLayer);
-		if (Utils::getBool("levelDescriptions")) applyLevelDescriptions(mainLayer);
+		if (Utils::getBool("levelDescriptions") && level->m_levelType != GJLevelType::Editor) applyLevelDescriptions(mainLayer);
 	}
 	void draw() {
 		LevelCell::draw();
