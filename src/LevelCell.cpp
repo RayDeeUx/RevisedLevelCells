@@ -223,9 +223,7 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void draw() {
 		LevelCell::draw();
-		if (!m_mainLayer) return;
-		if (m_fields->blendingApplied) return;
-		m_fields->blendingApplied = true;
+		if (!m_mainLayer || m_fields->blendingApplied) return;
 		if (Utils::getBool("blendingText")) applyBlendingText(m_mainLayer);
 	}
 };
