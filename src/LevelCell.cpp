@@ -134,26 +134,17 @@ class $modify(MyLevelCell, LevelCell) {
 		infoButton->setScale(.6f);
 		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
-		#ifndef GEODE_IS_MOBILE
-		descButton->setPosition({
-			viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
-			viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
-		});
-		#else
-		if (!Utils::doesNodeExistNoParent("DailyLevelPage")) {
-			if (const auto mainLayer = getChildByID("main-layer")) {
-				descButton->setPosition({
-					mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-					mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
-				});
-			}
+		if (Utils::getString("levelDescriptionsPosition") != "Bottom Right of \"View\" Button") {
+			descButton->setPosition({
+				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
+				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
+			});
 		} else {
 			descButton->setPosition({
 				viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
 				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
 			});
 		}
-		#endif
 		getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
 	void removePlacement(CCLayer* mainLayer) {

@@ -26,9 +26,26 @@
 		},
 		"levelDescriptions": {
 			"name": "Level Descriptions",
-			"description": "View level descriptions without opening the level's page.\n\n<cy>Does not apply to levels in the \"My Levels\" menu.</c>",
+			"description": "View level descriptions without opening the level's page, like with level lists. (Formerly part of ErysEdits.)\n\n<cy>Does not apply to levels in the \"My Levels\" menu.</c>",
 			"type": "bool",
 			"default": true
+		},
+		"levelDescriptionsPosition": {
+			"name": "Level Descriptions Button Position",
+			"type": "string",
+			"default": {
+				"win": "Bottom Right of \"View\" Button",
+				"mac": "Bottom Right of \"View\" Button",
+				"android": "Bottom Left of Level Cell"
+			},
+			"one-of": [
+				"Bottom Right of \"View\" Button",
+				"Bottom Left of Level Cell"
+			],
+			"platforms": [
+				"win",
+				"mac"
+			]
 		},
 		"recolorSongLabels": {
 			"name": "Recolor Song Labels",
