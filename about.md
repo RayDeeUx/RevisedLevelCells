@@ -7,6 +7,6 @@ Revise level cells just a smidge. Revisions include:
 - Better blending on `chatFont.fnt` text labels <cl>(primarily for those viewing thumbnails from [cdc's Level Thumbnails mod](mod:cdc.level_thumbnails))</c>
 - Remove list placement from level lists <cl>(Requires [Cvolton's Compact Lists mod](mod:cvolton.compact_lists) to be enabled)</c>
 
-Mod logo by [Alphalaneous](user:7834088)!
+Mod logo by [Alphalaneous](user:1139015)!
 
 This [Geode mod](https://geode-sdk.org) is licensed under LGPLv2. To report bugs or get help with using my mods, press the Discord button in the lower left corner.
