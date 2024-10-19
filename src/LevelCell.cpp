@@ -1,6 +1,7 @@
 #include <Geode/modify/LevelCell.hpp>
 #include "Manager.hpp"
 #include "Utils.hpp"
+#include <regex>
 
 #define PREFERRED_HOOK_PRIO (-2123456789)
 
@@ -21,7 +22,7 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void onShowLevelDesc(CCObject* sender) {
 		const auto theLevel = this->m_level;
-		if (theLevel->m_levelType != GJLevelType::Saved) return;
+		if (theLevel->m_levelType == GJLevelType::Local || theLevel->m_levelType == GJLevelType::Local) return;
 		std::string levelDesc = theLevel->getUnpackedLevelDescription();
 		if (levelDesc.empty()) {
 			if (Utils::doesNodeExistNoParent("provider-popup") || Utils::doesNodeExistNoParent("dogotrigger.level_history/provider-popup")) {
@@ -36,14 +37,21 @@ class $modify(MyLevelCell, LevelCell) {
 			}
 		}
 		std::string levelInfo = "(Level info unavailable)";
-		if (!theLevel->m_levelString.empty()) levelInfo = fmt::format("Level ID: <cy>{}</c>\nUploaded: {}", theLevel->m_levelID.value(), theLevel->m_timestamp);
+		std::string songInfo = "(Song info unavailable)";
+		if (const auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID)) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
+		levelInfo = fmt::format("Level ID: <cy>{}</c>\nSong: <cy>{}</c>", theLevel->m_levelID.value(), songInfo);
+		if (!theLevel->m_songIDs.empty()) levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
+		if (!theLevel->m_sfxIDs.empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", std::regex_replace(theLevel->m_sfxIDs, std::regex(","), ", ")));
 		FLAlertLayer::create(
 			nullptr,
 			theLevel->m_levelName.c_str(),
 			fmt::format("Published by {}\n\n{}\n\n{}", theLevel->m_creatorName, levelDesc, levelInfo),
 			"Close",
 			nullptr,
-			420.f
+			420.f,
+			levelInfo.length() > 300,
+			320.f,
+			1.0f
 		)->show();
 	}
 	void addColorToSequence(CCArray *arrayOfSequences, ccColor4B color) {
