@@ -72,11 +72,11 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!levelNameLabel || featureState == GJFeatureState::None) return;
 		const auto levelNameLabelColor = levelNameLabel->getColor();
 		const auto defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
-		auto color = ccColor3B(255, 255, 255);
-		if (featureState == GJFeatureState::Featured) if (Utils::getBool("recolorFeatured")) color = ccColor3B(255, 255, 0); else return;
-		else if (featureState == GJFeatureState::Epic) if (Utils::getBool("recolorEpic")) color = ccColor3B(255, 90, 75); else return;
-		else if (featureState == GJFeatureState::Legendary) if (Utils::getBool("recolorLegendary")) color = ccColor3B(255, 0, 255); else return;
-		else if (featureState == GJFeatureState::Mythic) if (Utils::getBool("recolorMythic")) color = ccColor3B(50, 200, 255); else return;
+		auto color = ccColor3B{255, 255, 255};
+		if (featureState == GJFeatureState::Featured) if (Utils::getBool("recolorFeatured")) color = ccColor3B{255, 255, 0}; else return;
+		else if (featureState == GJFeatureState::Epic) if (Utils::getBool("recolorEpic")) color = ccColor3B{255, 90, 75}; else return;
+		else if (featureState == GJFeatureState::Legendary) if (Utils::getBool("recolorLegendary")) color = ccColor3B{255, 0, 255}; else return;
+		else if (featureState == GJFeatureState::Mythic) if (Utils::getBool("recolorMythic")) color = ccColor3B{50, 200, 255}; else return;
 		if (color.r == 255 && color.g == 255 && color.b == 255) return;
 		const auto featuredColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), color.r, color.g, color.b);
 		CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
