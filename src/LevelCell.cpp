@@ -21,6 +21,7 @@ class $modify(MyLevelCell, LevelCell) {
 		(void) self.setHookPriority("LevelCell::loadCustomLevelCell", -PREFERRED_HOOK_PRIO);
 	}
 	void onShowLevelDesc(CCObject* sender) {
+		if (!Utils::modEnabled()) return;
 		const auto theLevel = this->m_level;
 		if (theLevel->m_levelType == GJLevelType::Local || theLevel->m_levelType == GJLevelType::Local) return;
 		std::string levelDesc = theLevel->getUnpackedLevelDescription();
@@ -28,7 +29,7 @@ class $modify(MyLevelCell, LevelCell) {
 			if (Utils::doesNodeExistNoParent("provider-popup") || Utils::doesNodeExistNoParent("dogotrigger.level_history/provider-popup")) {
 				levelDesc = "(No description available. You're probably viewing this level from a level history mod; there's not much more you can do from here.)";
 			} else if (Utils::doesNodeExist("LevelBrowserLayer", "saved-menu")) {
-				if (theLevel->m_levelString.empty()) levelDesc = "(No description visible. Try downloading the level again.)";
+				if (std::string(theLevel->m_levelString).empty()) levelDesc = "(No description visible. Try downloading the level again.)";
 				else levelDesc = "(No description provided)";
 			} else if (Utils::isSceneRunning("LevelListLayer")) {
 				levelDesc = "(No description visible. Try downloading the level, then exit and re-enter this level list to view this level's description again.)";
@@ -40,8 +41,8 @@ class $modify(MyLevelCell, LevelCell) {
 		std::string songInfo = "(Song info unavailable)";
 		if (const auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID)) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
 		levelInfo = fmt::format("Level ID: <cy>{}</c>\nSong: <cy>{}</c>", theLevel->m_levelID.value(), songInfo);
-		if (!theLevel->m_songIDs.empty()) levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
-		if (!theLevel->m_sfxIDs.empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", std::regex_replace(theLevel->m_sfxIDs, std::regex(","), ", ")));
+		if (!std::string(theLevel->m_songIDs).empty()) levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
+		if (!std::string(theLevel->m_sfxIDs).empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", std::regex_replace(std::string(theLevel->m_sfxIDs), std::regex(","), ", ")));
 		FLAlertLayer::create(
 			nullptr,
 			theLevel->m_levelName.c_str(),
@@ -55,19 +56,20 @@ class $modify(MyLevelCell, LevelCell) {
 		)->show();
 	}
 	void addColorToSequence(CCArray *arrayOfSequences, ccColor4B color) {
+		if (!Utils::modEnabled()) return;
 		arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
 	}
 	static void applyFeatureStateRecoloring(CCLayer* mainLayer) {
-		if (!Utils::getBool("recolorLevelNameFeaturedScore")) return;
+		if (!Utils::modEnabled() || !Utils::getBool("recolorLevelNameFeaturedScore")) return;
 		const auto diffContainerNode = mainLayer->getChildByIDRecursive("difficulty-container");
-		if (!diffContainerNode) { return; }
+		if (!diffContainerNode) return;
 		const auto diffSpriteNode = diffContainerNode->getChildByIDRecursive("difficulty-sprite");
-		if (!diffSpriteNode) { return; }
+		if (!diffSpriteNode) return;
 		const auto diffSprite = typeinfo_cast<GJDifficultySprite*>(diffSpriteNode);
-		if (!diffSprite) { return; }
+		if (!diffSprite) return;
 		const auto levelNameLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("level-name"));
 		const auto featureState = diffSprite->m_featureState;
-		if (!levelNameLabel || featureState == GJFeatureState::None) { return; }
+		if (!levelNameLabel || featureState == GJFeatureState::None) return;
 		const auto levelNameLabelColor = levelNameLabel->getColor();
 		const auto defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
 		auto color = ccColor3B(255, 255, 255);
@@ -82,7 +84,7 @@ class $modify(MyLevelCell, LevelCell) {
 		levelNameLabel->runAction(repeat);
 	}
 	void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
-		if (!Utils::getBool("recolorSongLabels")) return;
+		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels")) return;
 		const auto songName = mainLayer->getChildByIDRecursive("song-name");
 		if (!songName) return;
 		const auto songLabel = typeinfo_cast<CCLabelBMFont*>(songName);
@@ -130,25 +132,17 @@ class $modify(MyLevelCell, LevelCell) {
 				}
 			}
 			auto arrayOfSequences = CCArray::create();
-			if ((ncsSongs > 0 || ncs) && Utils::getBool("recolorNCS")) {
-				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
-			}
-			if (defaultSongs > 0 || defaultSongID < 1) {
-				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
-			}
-			if (ngSongs > 0) {
-				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
-			}
-			if (musicLibrarySongs > 0) {
-				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("musicLibraryColor"));
-			}
+			if ((ncsSongs > 0 || ncs) && Utils::getBool("recolorNCS")) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
+			if (defaultSongs > 0 || defaultSongID < 1) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
+			if (ngSongs > 0) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
+			if (musicLibrarySongs > 0) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("musicLibraryColor"));
 			CCActionInterval* sequence = CCSequence::create(arrayOfSequences);
 			CCAction* repeat = CCRepeatForever::create(sequence);
 			songLabel->runAction(repeat);
 		}
 	}
 	void applyLevelDescriptions(CCLayer* mainLayer) {
-		if (!Utils::getBool("levelDescriptions") || m_level->m_levelType == GJLevelType::Editor) return;
+		if (!Utils::modEnabled() || !Utils::getBool("levelDescriptions") || m_level->m_levelType == GJLevelType::Editor) return;
 		const auto viewButton = mainLayer->getChildByIDRecursive("view-button");
 		if (!viewButton) return;
 		const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
@@ -183,7 +177,7 @@ class $modify(MyLevelCell, LevelCell) {
 		this->m_level->m_unkInt = 0;
 	}
 	void applyBlendingText() {
-		if (!Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
+		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
 		for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
 			if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
 				if (std::string(label->getFntFile()) == "chatFont.fnt") {
@@ -197,32 +191,33 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void onClick(CCObject* sender) {
 		// hooking this function is necessary in order for the "view" button to work while compact mode is active in "my levels"
-		if (this->m_level->m_levelType == GJLevelType::Editor && Utils::modEnabled() && Utils::getBool("compactEditorLevels")) {
+		if (this->m_level->m_levelType == GJLevelType::Editor && Utils::modEnabled() && Utils::getBool("compactEditorLevels"))
 			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, EditLevelLayer::scene(m_level)));
-		} else { LevelCell::onClick(sender); }
+		else LevelCell::onClick(sender);
 	}
 	void loadLocalLevelCell() {
 		LevelCell::loadLocalLevelCell();
-		if (!(Utils::modEnabled() && Utils::getBool("compactEditorLevels"))) { return; }
-		if (const auto localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) { localLevelName->limitLabelWidth(200.f, .6f, .01f); }
-		if (const auto mainLayer = typeinfo_cast<CCLayer*>(getChildByIDRecursive("main-layer"))) { mainLayer->setPositionY(-3.f); }
+		if (!(Utils::modEnabled() && Utils::getBool("compactEditorLevels"))) return;
+		if (const auto localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) localLevelName->limitLabelWidth(200.f, .6f, .01f);
+		if (const auto mainLayer = typeinfo_cast<CCLayer*>(getChildByIDRecursive("main-layer"))) mainLayer->setPositionY(-3.f);
 	}
 	void loadCustomLevelCell() {
 		LevelCell::loadCustomLevelCell();
-		if (!Utils::modEnabled() || !m_mainMenu || !m_level) { return; }
+		if (!Utils::modEnabled() || !m_mainMenu || !m_level) return;
 		if (Utils::getBool("removePlacement")) removePlacement();
 	}
 	void loadFromLevel(GJGameLevel* level) {
 		LevelCell::loadFromLevel(level);
-		if (!Utils::modEnabled()) { return; }
+		if (!Utils::modEnabled()) return;
 		const auto mainLayer = this->m_mainLayer;
-		if (!mainLayer || !m_level) { return; }
+		if (!mainLayer || !m_level) return;
 		if (Utils::getBool("recolorSongLabels")) applySongRecoloring(mainLayer, m_level);
 		if (Utils::getBool("recolorLevelNameFeaturedScore")) applyFeatureStateRecoloring(mainLayer);
 		if (Utils::getBool("levelDescriptions") && level->m_levelType != GJLevelType::Editor) applyLevelDescriptions(mainLayer);
 	}
 	void draw() {
 		LevelCell::draw();
+		if (!Utils::modEnabled()) return;
 		if (Utils::getBool("blendingText")) applyBlendingText();
 	}
 };
