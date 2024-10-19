@@ -20,6 +20,18 @@ class $modify(MyLevelCell, LevelCell) {
 		(void) self.setHookPriority("LevelCell::loadLocalLevelCell", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadCustomLevelCell", -PREFERRED_HOOK_PRIO);
 	}
+	static double getInfoButtonScale() {
+		#ifdef GEODE_IS_MOBILE
+		Mod::get()->setSettingValue<double>("levelDescriptionScale", 0.6f);
+		#endif
+		return Utils::getDouble("levelDescriptionScale");
+	}
+	static std::string getInfoButtonLocation() {
+		#ifdef GEODE_IS_MOBILE
+		Mod::get()->setSettingValue<std::string>("levelDescriptionsPosition", "Top Left of Level Cell");
+		#endif
+		return Utils::getString("levelDescriptionsPosition");
+	}
 	void onShowLevelDesc(CCObject* sender) {
 		if (!Utils::modEnabled()) return;
 		const auto theLevel = this->m_level;
@@ -146,11 +158,11 @@ class $modify(MyLevelCell, LevelCell) {
 		const auto viewButton = mainLayer->getChildByIDRecursive("view-button");
 		if (!viewButton) return;
 		const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-		infoButton->setScale(Utils::getDouble("levelDescriptionScale"));
+		infoButton->setScale(getInfoButtonScale());
 		if (Utils::getDouble("levelDescriptionScale") > .6f) infoButton->setScale(.6f);
 		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
-		auto buttonPosSetting = Utils::getString("levelDescriptionsPosition");
+		auto buttonPosSetting = getInfoButtonLocation();
 		if (buttonPosSetting == "Bottom Left of Level Cell") {
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
