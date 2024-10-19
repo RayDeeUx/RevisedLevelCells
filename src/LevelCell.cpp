@@ -120,7 +120,7 @@ class $modify(MyLevelCell, LevelCell) {
 				if (songIDInt >= 10000000) {
 					auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(songIDInt);
 					if (!songInfoObject) { continue; }
-					if ((songInfoObject->m_songUrl.find("NCS") != std::string::npos || songInfoObject->m_songUrl.find("ncs") != std::string::npos) && Utils::getBool("recolorNCS")) {
+					if (utils::string::toLower(std::string(songInfoObject->m_songUrl)).find("ncs") != std::string::npos && Utils::getBool("recolorNCS")) {
 						ncsSongs++;
 					} else {
 						musicLibrarySongs++;
