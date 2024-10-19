@@ -182,9 +182,9 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
 		this->m_level->m_unkInt = 0;
 	}
-	void applyBlendingText(CCLayer* mainLayer) {
-		if (!Utils::getBool("blendingText") || !mainLayer || m_mainLayer) return;
-		for (const auto node : CCArrayExt<CCNode*>(mainLayer->getChildren())) {
+	void applyBlendingText() {
+		if (!Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
+		for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
 			if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
 				if (std::string(label->getFntFile()) == "chatFont.fnt") {
 					label->setBlendFunc({GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA});
@@ -193,6 +193,7 @@ class $modify(MyLevelCell, LevelCell) {
 				}
 			}
 		}
+		m_fields->blendingApplied = true;
 	}
 	void onClick(CCObject* sender) {
 		// hooking this function is necessary in order for the "view" button to work while compact mode is active in "my levels"
@@ -223,8 +224,6 @@ class $modify(MyLevelCell, LevelCell) {
 	void draw() {
 		LevelCell::draw();
 		if (!m_mainLayer) return;
-		if (m_fields->blendingApplied) return;
-		m_fields->blendingApplied = true;
-		if (Utils::getBool("blendingText")) applyBlendingText(m_mainLayer);
+		if (Utils::getBool("blendingText")) applyBlendingText();
 	}
 };
