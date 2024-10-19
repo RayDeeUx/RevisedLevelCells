@@ -145,7 +145,8 @@ class $modify(MyLevelCell, LevelCell) {
 		const auto viewButton = mainLayer->getChildByIDRecursive("view-button");
 		if (!viewButton) return;
 		const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-		infoButton->setScale(.6f);
+		infoButton->setScale(Utils::getDouble("levelDescriptionScale"));
+		if (Utils::getDouble("levelDescriptionScale") > .6f) infoButton->setScale(.6f);
 		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
 		auto buttonPosSetting = Utils::getString("levelDescriptionsPosition");
@@ -155,9 +156,11 @@ class $modify(MyLevelCell, LevelCell) {
 				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
 			});
 		} else if (buttonPosSetting == "Top Left of Level Cell") {
+			float yOffset = 81.5f;
+			if (m_listType == BoomListType::Level4) yOffset = 41.5f;
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 41.5f
+				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + yOffset
 			});
 		} else {
 			descButton->setPosition({

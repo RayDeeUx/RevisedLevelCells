@@ -36,7 +36,7 @@
 			"default": {
 				"win": "Bottom Right of \"View\" Button",
 				"mac": "Bottom Right of \"View\" Button",
-				"android": "Bottom Left of Level Cell"
+				"android": "Top Left of Level Cell"
 			},
 			"one-of": [
 				"Bottom Right of \"View\" Button",
@@ -47,6 +47,22 @@
 				"win",
 				"mac"
 			]
+		},
+		"levelDescriptionScale": {
+			"name": "Level Descriptions Button Scale",
+			"type": "float",
+			"default": 0.60,
+			"min": 0.10,
+			"max": 0.60,
+			"control": {
+				"input": true,
+				"slider": true,
+				"arrows": false,
+				"big-arrows": false,
+				"arrow-step": 0,
+				"big-arrow-step": 0,
+				"slider-step": 0.01
+			}
 		},
 		"recolorSongLabels": {
 			"name": "Recolor Song Labels",
