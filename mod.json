@@ -26,7 +26,7 @@
 		},
 		"levelDescriptions": {
 			"name": "Level Descriptions",
-			"description": "View level descriptions without opening the level's page, like with level lists. (Formerly part of ErysEdits.)\n\n<cy>Does not apply to levels in the \"My Levels\" menu.</c>",
+			"description": "View level descriptions (and a bit of extra info) without opening the level's page, like with level lists. (Formerly part of ErysEdits.)\n\n<cy>Does not apply to levels in the \"My Levels\" menu.</c>",
 			"type": "bool",
 			"default": true
 		},
@@ -51,7 +51,11 @@
 		"levelDescriptionScale": {
 			"name": "Level Descriptions Button Scale",
 			"type": "float",
-			"default": 0.60,
+			"default": {
+				"win": 0.60,
+				"mac": 0.60,
+				"android": 0.60
+			},
 			"min": 0.10,
 			"max": 0.60,
 			"control": {
@@ -62,7 +66,11 @@
 				"arrow-step": 0,
 				"big-arrow-step": 0,
 				"slider-step": 0.01
-			}
+			},
+			"platforms": [
+				"win",
+				"mac"
+			]
 		},
 		"recolorSongLabels": {
 			"name": "Recolor Song Labels",
@@ -106,7 +114,7 @@
 		},
 		"songCycleSpeed": {
 			"name": "Color Cycling Speed",
-			"description": "Sets how quickly (lower value)/slowly (higher value) the song label changes color if <cl>\"Cycle Through Above Colors\"</c> is enabled.",
+			"description": "Sets how quickly (lower value)/slowly (higher value) the song label changes color if <cl>\"Cycle Through Above Colors\"</c> is enabled.\n\n<cy>Technical limitations from RobTop's end may prevent text from changing color in some menus.</c>",
 			"type": "float",
 			"default": 1.5,
 			"min": 0.01,
@@ -122,10 +130,47 @@
 			}
 		},
 		"recolorLevelNameFeaturedScore": {
-			"name": "Recolor Level Name based on Featured Status",
-			"description": "Recolor a level's name based on its Featured status (Rated, <cy>Featured</c>, <co>Epic</c>, <cp>Legendary</c>, <cj>Mythic</c>).\n\nWill fade between white (the default color) and the corresponding color for its featured status.",
+			"name": "Pulse Level Name Color based on Featured Status",
+			"description": "Pulse the color of a level's name based on its Featured status (<cy>Featured</c>, <co>Epic</c>, <cp>Legendary</c>, <cj>Mythic</c>).\n\n<cy>This will fade the level name's color between white (the default color) and the corresponding color for its featured status.</c>\n\n<cy>Technical limitations from RobTop's end may prevent text from changing color in some menus.</c>",
 			"type": "bool",
-			"default": false
+			"default": true
+		},
+		"recolorFeatured": {
+			"name": "Recolor Level Name if Featured",
+			"type": "bool",
+			"default": true
+		},
+		"recolorEpic": {
+			"name": "Recolor Level Name if Epic",
+			"type": "bool",
+			"default": true
+		},
+		"recolorLegendary": {
+			"name": "Recolor Level Name if Legendary",
+			"type": "bool",
+			"default": true
+		},
+		"recolorMythic": {
+			"name": "Recolor Level Name if Mythic",
+			"type": "bool",
+			"default": true
+		},
+		"pulsingSpeed": {
+			"name": "Level Name Pulsing Speed",
+			"description": "Sets how frequently (lower value)/infrequently (higher value) the level name pulses if <cl>\"Pulse Level Name Color based on Featured Status\"</c> is enabled.",
+			"type": "float",
+			"default": 1.5,
+			"min": 0.01,
+			"max": 2.00,
+			"control": {
+				"input": true,
+				"slider": true,
+				"arrows": false,
+				"big-arrows": false,
+				"arrow-step": 0,
+				"big-arrow-step": 0,
+				"slider-step": 0.01
+			}
 		},
 		"blendingText": {
 			"name": "Readable Labels (Better Blending)",

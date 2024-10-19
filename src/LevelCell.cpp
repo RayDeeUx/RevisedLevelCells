@@ -57,7 +57,8 @@ class $modify(MyLevelCell, LevelCell) {
 	void addColorToSequence(CCArray *arrayOfSequences, ccColor4B color) {
 		arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
 	}
-	void applyFeatureStateRecoloring(CCLayer* mainLayer) {
+	static void applyFeatureStateRecoloring(CCLayer* mainLayer) {
+		if (!Utils::getBool("recolorLevelNameFeaturedScore")) return;
 		const auto diffContainerNode = mainLayer->getChildByIDRecursive("difficulty-container");
 		if (!diffContainerNode) { return; }
 		const auto diffSpriteNode = diffContainerNode->getChildByIDRecursive("difficulty-sprite");
@@ -68,80 +69,86 @@ class $modify(MyLevelCell, LevelCell) {
 		const auto featureState = diffSprite->m_featureState;
 		if (!levelNameLabel || featureState == GJFeatureState::None) { return; }
 		const auto levelNameLabelColor = levelNameLabel->getColor();
-		const auto defaultColor = CCTintTo::create(1.5f, levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
-		auto color = ccColor3B(50, 200, 255);
-		if (featureState == ::GJFeatureState::Featured) color = ccColor3B(255, 255, 0);
-		else if (featureState == ::GJFeatureState::Epic) color = ccColor3B(255, 90, 75);
-		else if (featureState == ::GJFeatureState::Legendary) color = ccColor3B(255, 0, 255);
-		const auto featuredColor = CCTintTo::create(1.5f, color.r, color.g, color.b);
+		const auto defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
+		auto color = ccColor3B(255, 255, 255);
+		if (featureState == GJFeatureState::Featured) if (Utils::getBool("recolorFeatured")) color = ccColor3B(255, 255, 0); else return;
+		else if (featureState == GJFeatureState::Epic) if (Utils::getBool("recolorEpic")) color = ccColor3B(255, 90, 75); else return;
+		else if (featureState == GJFeatureState::Legendary) if (Utils::getBool("recolorLegendary")) color = ccColor3B(255, 0, 255); else return;
+		else if (featureState == GJFeatureState::Mythic) if (Utils::getBool("recolorMythic")) color = ccColor3B(50, 200, 255); else return;
+		if (color.r == 255 && color.g == 255 && color.b == 255) return;
+		const auto featuredColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), color.r, color.g, color.b);
 		CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
 		CCAction* repeat = CCRepeatForever::create(sequence);
 		levelNameLabel->runAction(repeat);
 	}
-	void applySongRecoloring(cocos2d::CCLayer* mainLayer, GJGameLevel* level) {
-		if (const auto songLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("song-name"))) {
-			std::string songIDs = level->m_songIDs;
-			const int defaultSongID = level->m_songID;
-			const bool ncs = mainLayer->getChildByIDRecursive("ncs-icon");
-			const bool songIDsEmpty = songIDs.empty();
-			const bool defaultSongIsNCSOrML = defaultSongID >= 10000000;
-			const bool defaultSongIsNewgrounds = defaultSongID >= 1 && defaultSongID < 10000000;
-			if (!Utils::getBool("cycleThroughColors") || songIDsEmpty || songIDs.find(',') == std::string::npos) {
-				ccColor4B colorAlpha;
-				if (defaultSongIsNCSOrML) {
-					colorAlpha = Utils::getColorAlpha("musicLibraryColor");
-					if (ncs && Utils::getBool("recolorNCS")) { colorAlpha = Utils::getColorAlpha("ncsColor"); }
-				} else if (defaultSongIsNewgrounds) {
-					colorAlpha = Utils::getColorAlpha("newgroundsColor");
-				} else {
-					colorAlpha = Utils::getColorAlpha("defaultSongColor");
-				}
-				songLabel->setColor({colorAlpha.r, colorAlpha.g, colorAlpha.b});
-				songLabel->setOpacity(colorAlpha.a);
+	void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
+		if (!Utils::getBool("recolorSongLabels")) return;
+		const auto songName = mainLayer->getChildByIDRecursive("song-name");
+		if (!songName) return;
+		const auto songLabel = typeinfo_cast<CCLabelBMFont*>(songName);
+		if (!songLabel) return;
+		const std::string songIDs = level->m_songIDs;
+		const int defaultSongID = level->m_songID;
+		const bool ncs = mainLayer->getChildByIDRecursive("ncs-icon");
+		const bool songIDsEmpty = songIDs.empty();
+		const bool defaultSongIsNCSOrML = defaultSongID >= 10000000;
+		const bool defaultSongIsNewgrounds = defaultSongID >= 1 && defaultSongID < 10000000;
+		if (!Utils::getBool("cycleThroughColors") || songIDsEmpty || songIDs.find(',') == std::string::npos) {
+			ccColor4B colorAlpha;
+			if (defaultSongIsNCSOrML) {
+				colorAlpha = Utils::getColorAlpha("musicLibraryColor");
+				if (ncs && Utils::getBool("recolorNCS")) { colorAlpha = Utils::getColorAlpha("ncsColor"); }
+			} else if (defaultSongIsNewgrounds) {
+				colorAlpha = Utils::getColorAlpha("newgroundsColor");
 			} else {
-				std::vector<std::string> songIDVector = utils::string::split(songIDs, ",");
-				int ngSongs = 0;
-				int defaultSongs = 0;
-				int ncsSongs = 0;
-				int musicLibrarySongs = 0;
-				for (const auto& songIDString : songIDVector) {
-					int songIDInt = utils::numFromString<int>(songIDString).unwrapOr(INT_MIN);
-					if (songIDInt == INT_MIN) { continue; }
-					ccColor4B colorToAdd;
-					if (songIDInt >= 10000000) {
-						auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(songIDInt);
-						if (!songInfoObject) { continue; }
-						if ((songInfoObject->m_songUrl.find("NCS") != std::string::npos || songInfoObject->m_songUrl.find("ncs") != std::string::npos) && Utils::getBool("recolorNCS")) {
-							ncsSongs++;
-						} else {
-							musicLibrarySongs++;
-						}
-					} else if (songIDInt >= 1) {
-						ngSongs++;
-					} else {
-						defaultSongs++;
-					}
-				}
-				auto arrayOfSequences = CCArray::create();
-				if ((ncsSongs > 0 || ncs) && Utils::getBool("recolorNCS")) {
-					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
-				}
-				if (defaultSongs > 0 || defaultSongID < 1) {
-					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
-				}
-				if (ngSongs > 0) {
-					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
-				}
-				if (musicLibrarySongs > 0) {
-					addColorToSequence(arrayOfSequences, Utils::getColorAlpha("musicLibraryColor"));
-				}
-				CCActionInterval* sequence = CCSequence::create(arrayOfSequences);
-				CCAction* repeat = CCRepeatForever::create(sequence);
-				songLabel->runAction(repeat);
+				colorAlpha = Utils::getColorAlpha("defaultSongColor");
 			}
+			songLabel->setColor({colorAlpha.r, colorAlpha.g, colorAlpha.b});
+			songLabel->setOpacity(colorAlpha.a);
+		} else {
+			std::vector<std::string> songIDVector = utils::string::split(songIDs, ",");
+			int ngSongs = 0;
+			int defaultSongs = 0;
+			int ncsSongs = 0;
+			int musicLibrarySongs = 0;
+			for (const auto& songIDString : songIDVector) {
+				int songIDInt = utils::numFromString<int>(songIDString).unwrapOr(INT_MIN);
+				if (songIDInt == INT_MIN) { continue; }
+				ccColor4B colorToAdd;
+				if (songIDInt >= 10000000) {
+					auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(songIDInt);
+					if (!songInfoObject) { continue; }
+					if ((songInfoObject->m_songUrl.find("NCS") != std::string::npos || songInfoObject->m_songUrl.find("ncs") != std::string::npos) && Utils::getBool("recolorNCS")) {
+						ncsSongs++;
+					} else {
+						musicLibrarySongs++;
+					}
+				} else if (songIDInt >= 1) {
+					ngSongs++;
+				} else {
+					defaultSongs++;
+				}
+			}
+			auto arrayOfSequences = CCArray::create();
+			if ((ncsSongs > 0 || ncs) && Utils::getBool("recolorNCS")) {
+				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
+			}
+			if (defaultSongs > 0 || defaultSongID < 1) {
+				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
+			}
+			if (ngSongs > 0) {
+				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
+			}
+			if (musicLibrarySongs > 0) {
+				addColorToSequence(arrayOfSequences, Utils::getColorAlpha("musicLibraryColor"));
+			}
+			CCActionInterval* sequence = CCSequence::create(arrayOfSequences);
+			CCAction* repeat = CCRepeatForever::create(sequence);
+			songLabel->runAction(repeat);
 		}
 	}
 	void applyLevelDescriptions(CCLayer* mainLayer) {
+		if (!Utils::getBool("levelDescriptions") || m_level->m_levelType == GJLevelType::Editor) return;
 		const auto viewButton = mainLayer->getChildByIDRecursive("view-button");
 		if (!viewButton) return;
 		const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
@@ -170,10 +177,23 @@ class $modify(MyLevelCell, LevelCell) {
 		}
 		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
-	void removePlacement(CCLayer* mainLayer) {
+	void removePlacement() const {
 		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists")) return;
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
 		this->m_level->m_unkInt = 0;
+	}
+	void applyBlendingText(CCLayer* mainLayer) {
+		if (!Utils::getBool("blendingText") || !mainLayer || m_mainLayer || m_fields->blendingApplied) return;
+		for (const auto node : CCArrayExt<CCNode*>(mainLayer->getChildren())) {
+			if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
+				if (std::string(label->getFntFile()) == "chatFont.fnt") {
+					label->setBlendFunc({GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA});
+					label->setColor({255, 255, 255});
+					label->setOpacity(255);
+				}
+			}
+		}
+		m_fields->blendingApplied = true;
 	}
 	void onClick(CCObject* sender) {
 		// hooking this function is necessary in order for the "view" button to work while compact mode is active in "my levels"
@@ -189,10 +209,8 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void loadCustomLevelCell() {
 		LevelCell::loadCustomLevelCell();
-		if (!Utils::modEnabled() || !m_mainMenu) { return; }
-		const auto mainLayer = this->m_mainLayer;
-		if (!mainLayer || !m_level) { return; }
-		if (Utils::getBool("removePlacement")) removePlacement(mainLayer);
+		if (!Utils::modEnabled() || !m_mainMenu || !m_level) { return; }
+		if (Utils::getBool("removePlacement")) removePlacement();
 	}
 	void loadFromLevel(GJGameLevel* level) {
 		LevelCell::loadFromLevel(level);
@@ -205,17 +223,9 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void draw() {
 		LevelCell::draw();
+		if (!m_mainLayer) return;
 		if (m_fields->blendingApplied) return;
 		m_fields->blendingApplied = true;
-		if (!Utils::getBool("blendingText")) return;
-		for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
-			if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
-				if (std::string(label->getFntFile()) == "chatFont.fnt") {
-					label->setBlendFunc({GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA});
-					label->setColor({255, 255, 255});
-					label->setOpacity(255);
-				}
-			}
-		}
+		if (Utils::getBool("blendingText")) applyBlendingText(m_mainLayer);
 	}
 };
