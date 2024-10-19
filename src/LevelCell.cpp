@@ -21,20 +21,26 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void onShowLevelDesc(CCObject* sender) {
 		const auto theLevel = this->m_level;
+		if (theLevel->m_levelType != GJLevelType::Saved) return;
 		std::string levelDesc = theLevel->getUnpackedLevelDescription();
 		if (levelDesc.empty()) {
 			if (Utils::doesNodeExistNoParent("provider-popup") || Utils::doesNodeExistNoParent("dogotrigger.level_history/provider-popup")) {
 				levelDesc = "(No description available. You're probably viewing this level from a level history mod; there's not much more you can do from here.)";
-			} else if (Utils::doesNodeExist("LevelBrowserLayer", "saved-menu") || Utils::isSceneRunning("LevelListLayer")) {
+			} else if (Utils::doesNodeExist("LevelBrowserLayer", "saved-menu")) {
+				if (theLevel->m_levelString.empty()) levelDesc = "(No description visible. Try downloading the level again.)";
+				else levelDesc = "(No description provided)";
+			} else if (Utils::isSceneRunning("LevelListLayer")) {
 				levelDesc = "(No description visible. Try downloading the level, then exit and re-enter this level list to view this level's description again.)";
 			} else {
 				levelDesc = "(No description provided)";
 			}
 		}
+		std::string levelInfo = "(Level info unavailable)";
+		if (!theLevel->m_levelString.empty()) levelInfo = fmt::format("Level ID: <cy>{}</c>\nUploaded: {}", theLevel->m_levelID.value(), theLevel->m_timestamp);
 		FLAlertLayer::create(
 			nullptr,
-			std::string(theLevel->m_levelName).c_str(),
-			fmt::format("Pubished by {}\n\n{}", theLevel->m_creatorName, levelDesc),
+			theLevel->m_levelName.c_str(),
+			fmt::format("Published by {}\n\n{}\n\n{}", theLevel->m_creatorName, levelDesc, levelInfo),
 			"Close",
 			nullptr,
 			420.f
@@ -143,7 +149,7 @@ class $modify(MyLevelCell, LevelCell) {
 		} else if (buttonPosSetting == "Top Left of Level Cell") {
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) - 15.f
+				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 41.5f
 			});
 		} else {
 			descButton->setPosition({
