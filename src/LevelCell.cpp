@@ -134,15 +134,16 @@ class $modify(MyLevelCell, LevelCell) {
 		infoButton->setScale(.6f);
 		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
-		if (Utils::getString("levelDescriptionsPosition") == "Bottom Left of Level Cell") {
+		auto buttonPosSetting = Utils::getString("levelDescriptionsPosition");
+		if (buttonPosSetting == "Bottom Left of Level Cell") {
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
 				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
 			});
-		} else if (Utils::getString("levelDescriptionsPosition") == "Top Left of Level Cell") {
+		} else if (buttonPosSetting == "Top Left of Level Cell") {
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-				mainLayer->getPositionY() + (mainLayer->getContentSize().height / 2.f) - 7.5f
+				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) - 15.f
 			});
 		} else {
 			descButton->setPosition({
@@ -150,7 +151,7 @@ class $modify(MyLevelCell, LevelCell) {
 				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
 			});
 		}
-		getChildByIDRecursive("main-menu")->addChild(descButton);
+		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
 	void removePlacement(CCLayer* mainLayer) {
 		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists")) return;
