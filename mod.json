@@ -40,6 +40,7 @@
 			},
 			"one-of": [
 				"Bottom Right of \"View\" Button",
+				"Top Left of Level Cell",
 				"Bottom Left of Level Cell"
 			],
 			"platforms": [
