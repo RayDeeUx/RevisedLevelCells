@@ -142,7 +142,7 @@ class $modify(MyLevelCell, LevelCell) {
 		} else if (Utils::getString("levelDescriptionsPosition") == "Top Left of Level Cell") {
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-				mainLayer->getPositionY() + (mainLayer->getContentSize().height / 2.f) + 7.5f
+				mainLayer->getPositionY() + (mainLayer->getContentSize().height / 2.f) - 7.5f
 			});
 		} else {
 			descButton->setPosition({
