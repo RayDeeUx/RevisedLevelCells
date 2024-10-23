@@ -22,15 +22,17 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	static double getInfoButtonScale() {
 		#ifdef GEODE_IS_MOBILE
-		Mod::get()->setSettingValue<double>("levelDescriptionScale", 0.6f);
-		#endif
+		return 0.6f;
+		#else
 		return Utils::getDouble("levelDescriptionScale");
+		#endif
 	}
 	static std::string getInfoButtonLocation() {
 		#ifdef GEODE_IS_MOBILE
-		Mod::get()->setSettingValue<std::string>("levelDescriptionsPosition", "Top Left of Level Cell");
-		#endif
+		return "Top Left of Level Cell";
+		#else
 		return Utils::getString("levelDescriptionsPosition");
+		#endif
 	}
 	void onShowLevelDesc(CCObject* sender) {
 		if (!Utils::modEnabled()) return;
