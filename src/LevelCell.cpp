@@ -188,7 +188,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void removePlacement() const {
 		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists")) return;
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
-		this->m_level->m_unkInt = 0;
+		this->m_level->m_listPosition = 0;
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
