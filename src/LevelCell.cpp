@@ -3,7 +3,7 @@
 #include "Utils.hpp"
 #include <regex>
 
-#define PREFERRED_HOOK_PRIO (-4000)
+#define PREFERRED_HOOK_PRIO (-3999)
 
 using namespace geode::prelude;
 
