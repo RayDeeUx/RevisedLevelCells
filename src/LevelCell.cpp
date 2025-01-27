@@ -188,7 +188,6 @@ class $modify(MyLevelCell, LevelCell) {
 	void removePlacement() const {
 		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists") || !m_mainLayer) return;
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
-		if (m_level->m_listPosition == 0) return; // those cases should be handed by cvolton by now
 		const auto label = m_mainLayer->getChildByID("level-place");
 		if (!label) return;
 		label->setVisible(false);
@@ -204,8 +203,8 @@ class $modify(MyLevelCell, LevelCell) {
 		}
 		const auto viewButton = m_mainMenu->getChildByID("view-button");
 		if (!viewButton) return;
-		m_mainLayer->getChildByID("completed-icon")->setPosition({276.f, 25.f});
-		m_mainLayer->getChildByID("percentage-label")->setPosition({276.f, 25.f});
+		if (const auto node = m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
+		if (const auto node = m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
