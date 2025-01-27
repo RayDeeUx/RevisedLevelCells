@@ -223,7 +223,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void loadLocalLevelCell() {
 		LevelCell::loadLocalLevelCell();
 		if (!(Utils::modEnabled() && Utils::getBool("compactEditorLevels"))) return;
-		if (CCNode* localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) localLevelName->limitLabelWidth(200.f, .6f, .01f);
+		if (CCLabelBMFont* localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) localLevelName->limitLabelWidth(200.f, .6f, .01f);
 		if (CCNode* mainLayer = getChildByIDRecursive("main-layer")) mainLayer->setPositionY(-3.f);
 	}
 	void loadCustomLevelCell() {
