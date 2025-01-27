@@ -188,6 +188,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void removePlacement() const {
 		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists") || !m_mainLayer) return;
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
+		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
 		const auto label = m_mainLayer->getChildByID("level-place");
 		if (!label) return;
 		label->setVisible(false);
