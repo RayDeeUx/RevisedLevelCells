@@ -4,6 +4,7 @@
 #include <regex>
 
 #define PREFERRED_HOOK_PRIO (-3999)
+#define LEVEL_PLACEMENT_OFFSET 20.f
 
 using namespace geode::prelude;
 
@@ -12,8 +13,7 @@ class $modify(MyLevelCell, LevelCell) {
 		Manager* manager = Manager::getSharedInstance();
 		bool blendingApplied = false;
 	};
-	static void onModify(auto & self)
-	{
+	static void onModify(auto & self) {
 		(void) self.setHookPriority("LevelCell::draw", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::onClick", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadFromLevel", PREFERRED_HOOK_PRIO);
@@ -186,9 +186,26 @@ class $modify(MyLevelCell, LevelCell) {
 		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
 	void removePlacement() const {
-		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists")) return;
+		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists") || !m_mainLayer) return;
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
-		this->m_level->m_listPosition = 0;
+		if (m_level->m_listPosition == 0) return; // those cases should be handed by cvolton by now
+		const auto label = m_mainLayer->getChildByID("level-place");
+		if (!label) return;
+		label->setVisible(false);
+		for (auto child : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
+			if (child->getID() == "main-menu") continue;
+			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
+		}
+		const auto menu = m_mainLayer->getChildByID("main-menu");
+		if (!menu) return;
+		for (auto child : CCArrayExt<CCNode*>(menu->getChildren())) {
+			if (child->getID() == "view-button") continue;
+			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
+		}
+		const auto viewButton = m_mainMenu->getChildByID("view-button");
+		if (!viewButton) return;
+		m_mainLayer->getChildByID("completed-icon")->setPosition({276.f, 25.f});
+		m_mainLayer->getChildByID("percentage-label")->setPosition({276.f, 25.f});
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
