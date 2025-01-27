@@ -18,7 +18,6 @@ class $modify(MyLevelCell, LevelCell) {
 		(void) self.setHookPriority("LevelCell::onClick", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadFromLevel", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadLocalLevelCell", PREFERRED_HOOK_PRIO);
-		(void) self.setHookPriority("LevelCell::loadCustomLevelCell", -PREFERRED_HOOK_PRIO);
 	}
 	static double getInfoButtonScale() {
 		#ifdef GEODE_IS_MOBILE
@@ -190,8 +189,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
 		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
 		const auto label = m_mainLayer->getChildByID("level-place");
-		if (!label) return;
-		label->setVisible(false);
+		if (label) label->setVisible(false);
 		for (auto child : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
 			if (child->getID() == "main-menu") continue;
 			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
