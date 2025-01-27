@@ -196,16 +196,17 @@ class $modify(MyLevelCell, LevelCell) {
 			if (child->getID() == "main-menu") continue;
 			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
 		}
-		const auto menu = m_mainLayer->getChildByID("main-menu");
-		if (!menu) return;
-		for (auto child : CCArrayExt<CCNode*>(menu->getChildren())) {
-			if (child->getID() == "view-button") continue;
-			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
+		if (const auto menu = m_mainLayer->getChildByID("main-menu")) {
+			for (auto child : CCArrayExt<CCNode*>(menu->getChildren())) {
+				if (child->getID() == "view-button") continue;
+				child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
+			}
 		}
 		const auto viewButton = m_mainMenu->getChildByID("view-button");
-		if (!viewButton) return;
-		if (const auto node = m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
-		if (const auto node = m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
+		if (viewButton) {
+			if (const auto node = m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
+			if (const auto node = m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
+		}
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
