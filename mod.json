@@ -180,7 +180,7 @@
 		},
 		"removePlacement": {
 			"name": "Remove Level List Placement",
-			"description": "<cp>REQUIRES THE \"COMPACT LISTS\" MOD BY CVOLTON.</c>\n\nRemove the placement numbers from LevelCells when viewing level lists.\n<cy>Much like Cvolton's code, this feature will move the percentage label to the left of the</c> <cl>\"View\"</c> <cy>button.</c>",
+			"description": "<cl>Original code by Cvolton.</c>\n\nRemove the placement numbers from LevelCells when viewing level lists.\n<cy>Much like Cvolton's code, this feature will move the percentage label to the left of the</c> <cl>\"View\"</c> <cy>button.</c>",
 			"type": "bool",
 			"default": true
 		}
@@ -188,7 +188,7 @@
 	"dependencies": [
 		{
 			"id": "geode.node-ids",
-			"version": ">=1.14.0",
+			"version": ">=1.19.0",
 			"importance": "required"
 		}
 	],
