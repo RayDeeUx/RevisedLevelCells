@@ -185,25 +185,20 @@ class $modify(MyLevelCell, LevelCell) {
 		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
 	void removePlacement() const {
-		if (!Utils::modEnabled() || !Utils::isModLoaded("cvolton.compact_lists") || !m_mainLayer) return;
-		if (!Utils::getMod("cvolton.compact_lists")->getSettingValue<bool>("enable-compact-lists")) return;
+		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !m_mainMenu || !m_mainLayer) return;
 		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
-		const auto label = m_mainLayer->getChildByID("level-place");
-		if (label) label->setVisible(false);
-		for (auto child : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
+		if (CCNode* placementLabel = m_mainLayer->getChildByID("level-place")) placementLabel->setVisible(false);
+		for (CCNode* child : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
 			if (child->getID() == "main-menu") continue;
 			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
 		}
-		if (const auto menu = m_mainLayer->getChildByID("main-menu")) {
-			for (auto child : CCArrayExt<CCNode*>(menu->getChildren())) {
-				if (child->getID() == "view-button") continue;
-				child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
-			}
+		for (CCNode* child : CCArrayExt<CCNode*>(m_mainMenu->getChildren())) {
+			if (child->getID() == "view-button") continue;
+			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
 		}
-		const auto viewButton = m_mainMenu->getChildByID("view-button");
-		if (viewButton) {
-			if (const auto node = m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
-			if (const auto node = m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
+		if (CCNode* viewButton = m_mainMenu->getChildByID("view-button")) {
+			if (CCNode* node = m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
+			if (CCNode* node = m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
 		}
 	}
 	void applyBlendingText() {
@@ -228,8 +223,8 @@ class $modify(MyLevelCell, LevelCell) {
 	void loadLocalLevelCell() {
 		LevelCell::loadLocalLevelCell();
 		if (!(Utils::modEnabled() && Utils::getBool("compactEditorLevels"))) return;
-		if (const auto localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) localLevelName->limitLabelWidth(200.f, .6f, .01f);
-		if (const auto mainLayer = typeinfo_cast<CCLayer*>(getChildByIDRecursive("main-layer"))) mainLayer->setPositionY(-3.f);
+		if (CCNode* localLevelName = getChildByIDRecursive("level-name")) localLevelName->limitLabelWidth(200.f, .6f, .01f);
+		if (CCNode* mainLayer = getChildByIDRecursive("main-layer")) mainLayer->setPositionY(-3.f);
 	}
 	void loadCustomLevelCell() {
 		LevelCell::loadCustomLevelCell();
@@ -239,7 +234,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void loadFromLevel(GJGameLevel* level) {
 		LevelCell::loadFromLevel(level);
 		if (!Utils::modEnabled()) return;
-		const auto mainLayer = this->m_mainLayer;
+		CCLayer* mainLayer = this->m_mainLayer;
 		if (!mainLayer || !m_level) return;
 		if (Utils::getBool("recolorSongLabels")) applySongRecoloring(mainLayer, m_level);
 		if (Utils::getBool("recolorLevelNameFeaturedScore")) applyFeatureStateRecoloring(mainLayer);
