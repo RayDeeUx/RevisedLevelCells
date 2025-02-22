@@ -185,7 +185,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
 	void removePlacement() const {
-		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !m_mainMenu || !m_mainLayer || m_level->m_listPosition == 0) return;
+		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !m_mainMenu || !m_mainLayer || m_level->m_listPosition == 0 || !CCScene::get()->getChildByType<LevelListLayer>(0)) return;
 		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
 		if (CCNode* placementLabel = m_mainLayer->getChildByID("level-place")) placementLabel->setVisible(false);
 		for (CCNode* child : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
