@@ -224,13 +224,13 @@ class $modify(MyLevelCell, LevelCell) {
 		if (CCNode* mainLayer = getChildByIDRecursive("main-layer")) mainLayer->setPositionY(-3.f);
 	}
 	void determineLevelVisibility(GJGameLevel *level) {
-		if (!Utils::modEnabled()) return;
 		Manager* manager = Manager::getSharedInstance();
+		if (!Utils::modEnabled() || level->m_userID.value() == manager->userID) return;
 		const std::string& levelName = level->m_levelName;
 		const int accountID = level->m_accountID.value();
-		if (Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelCell::hideLevel("by Ignored User"); // log::info("level {} by {} should be hidden because of user ID", levelName, accountID); // impl function later
-		if (Utils::contains<int>(manager->favoriteUsers, accountID)) return MyLevelCell::highlightLevel();
-		if (utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
+		if (Utils::getBool("ignorePeople") && Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelCell::hideLevel("by Ignored User");
+		if (Utils::getBool("favoriteUsers") && Utils::contains<int>(manager->favoriteUsers, accountID)) return MyLevelCell::highlightLevel();
+		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
 	}
 	void hideLevel(const std::string_view reason) {
 		if (!Utils::modEnabled()) return;
@@ -265,9 +265,9 @@ class $modify(MyLevelCell, LevelCell) {
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(true);
 	}
 	void highlightLevel() {
-		if (!Utils::modEnabled()) return;
-		constexpr ccColor4B color = {255, 255, 255, 128};
-		CCLayerGradient* gradientHighlight = CCLayerGradient::create({color.r, color.g, color.b, color.a}, {color.r, color.g, color.b, 0});
+		if (!Utils::modEnabled() || !Utils::getBool("favoriteUsers")) return;
+		const auto [r, g, b, a] = Utils::getColorAlpha("favoriteUserColor");
+		CCLayerGradient* gradientHighlight = CCLayerGradient::create({r, g, b, a}, {r, g, b, 0});
 		gradientHighlight->setContentSize(m_backgroundLayer->getContentSize());
 		gradientHighlight->setPosition(m_backgroundLayer->getPosition());
 		m_backgroundLayer->setZOrder(m_backgroundLayer->getZOrder() - 1);

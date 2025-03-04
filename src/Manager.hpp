@@ -17,6 +17,8 @@ public:
 	std::vector<int> ignoredUsers;
 	std::vector<int> favoriteUsers;
 
+	int userID = -1;
+
 	static Manager* getSharedInstance() {
 		if (!instance) instance = new Manager();
 		return instance;

@@ -193,6 +193,29 @@
 			"description": "<cl>Original code by Cvolton.</c>\n\nRemove the placement numbers from LevelCells when viewing level lists.\n<cy>Much like Cvolton's code, this feature will move the percentage label to the left of the</c> <cl>\"View\"</c> <cy>button.</c>",
 			"type": "bool",
 			"default": true
+		},
+		"favoriteUsers": {
+			"name": "Highlight Levels/Lists From Favorite Users",
+			"description": "Highlight levels/level lists from <co>your favorite users</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cr>remove</c> <cy>someone from your favorite users, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change. Following a user does not add them to</c> <cl>your favorite users list from this mod</c><cy>.</c>",
+			"type": "bool",
+			"default": true
+		},
+		"favoriteUserColor": {
+			"name": "Favorite User Highlight Color",
+			"type": "rgba",
+			"default": [240, 211, 42, 150]
+		},
+		"ignorePeople": {
+			"name": "Hide Levels/Lists From Ignored People",
+			"description": "Hide levels/level lists from <co>people you \"ignore\"</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cr>remove</c> <cy>someone from your ignored users list, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change.</c>\n<cr>BLOCKING PEOPLE THROUGH PROFILES DOES</c> <c_>NOT</c> <cr>PRODUCE THE SAME EFFECT AS \"IGNORING\" PEOPLE.</c>",
+			"type": "bool",
+			"default": true
+		},
+		"personalFilter": {
+			"name": "Personal Phrases Filter",
+			"description": "Hide levels/level lists with names containing <co>words or phrases you dislike</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cg>add</c> <cy>or</c> <cr>remove</c> <cy>a word/phrase from your personal phrase filter, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change, and</c> <co>does not apply to your own levels.</c>",
+			"type": "bool",
+			"default": true
 		}
 	},
 	"dependencies": [
