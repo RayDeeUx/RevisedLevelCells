@@ -243,7 +243,7 @@ class $modify(MyLevelCell, LevelCell) {
 		menu->addChild(button);
 		menu->ignoreAnchorPointForPosition(false);
 		menu->setContentSize(button->getContentSize());
-		menu->setPosition({this->m_compactView ? 320.f :315.f, this->m_height / 2.f});
+		menu->setPosition({this->m_compactView ? 318.85f : 314.85f, this->m_height / 2.f});
 
 		button->setPosition(button->getContentSize() / 2.f);
 
