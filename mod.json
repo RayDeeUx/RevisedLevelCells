@@ -28,6 +28,12 @@
 			"description": "Refreshes your personal phrases filter and favorite/ignored users list.",
 			"type": "custom:updatelists"
 		},
+		"applyToLists": {
+			"name": "Apply Changes to Level Lists",
+			"description": "Apply all possible changes from this mod (blending text + conditional list hiding) to level lists as well.",
+			"type": "bool",
+			"default": true
+		},
 		"compactEditorLevels": {
 			"name": "Compact Editor Levels",
 			"description": "<cl>Original code by Cvolton.</c>\n\nCompacts your editor levels in \"My Levels\" menu.\n\n<cy>Due to how this feature is implemented, enabling this option also disables selecting multiple levels for deletion.</c>",
@@ -213,7 +219,7 @@
 		},
 		"personalFilter": {
 			"name": "Personal Phrases Filter",
-			"description": "Hide levels/level lists with names containing <co>words or phrases you dislike</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cg>add</c> <cy>or</c> <cr>remove</c> <cy>a word/phrase from your personal phrase filter, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change, and</c> <co>does not apply to your own levels.</c>",
+			"description": "Hide levels/level lists with names containing <co>words or phrases you dislike</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cg>add</c> <cy>or</c> <cr>remove</c> <cy>a word/phrase from your personal phrase filter, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change, and</c> <co>does not apply to your own levels/lists.</c>",
 			"type": "bool",
 			"default": true
 		},

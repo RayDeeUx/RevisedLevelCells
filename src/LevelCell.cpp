@@ -10,7 +10,6 @@ using namespace geode::prelude;
 
 class $modify(MyLevelCell, LevelCell) {
 	struct Fields {
-		Manager* manager = Manager::getSharedInstance();
 		bool blendingApplied = false;
 	};
 	static void onModify(auto & self) {

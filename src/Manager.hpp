@@ -18,6 +18,7 @@ public:
 	std::vector<int> favoriteUsers;
 
 	int userID = -1;
+	std::string username = "";
 
 	static Manager* getSharedInstance() {
 		if (!instance) instance = new Manager();

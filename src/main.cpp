@@ -20,6 +20,7 @@ class $modify(MyMenuLayer, MenuLayer) {
 
 		GameManager* gm = GameManager::get();
 		manager->userID = gm->m_playerUserID.value();
+		manager->username = utils::string::toLower(gm->m_playerName);
 
 		return true;
 	}
