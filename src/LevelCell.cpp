@@ -18,6 +18,7 @@ class $modify(MyLevelCell, LevelCell) {
 		(void) self.setHookPriority("LevelCell::onClick", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadFromLevel", PREFERRED_HOOK_PRIO);
 		(void) self.setHookPriority("LevelCell::loadLocalLevelCell", PREFERRED_HOOK_PRIO);
+		(void) self.setHookPriority("LevelCell::loadCustomLevelCell", PREFERRED_HOOK_PRIO);
 	}
 	static double getInfoButtonScale() {
 		#ifdef GEODE_IS_MOBILE
@@ -46,9 +47,7 @@ class $modify(MyLevelCell, LevelCell) {
 				else levelDesc = "(No description provided)";
 			} else if (Utils::isSceneRunning("LevelListLayer")) {
 				levelDesc = "(No description visible. Try downloading the level, then exit and re-enter this level list to view this level's description again.)";
-			} else {
-				levelDesc = "(No description provided)";
-			}
+			} else levelDesc = "(No description provided)";
 		}
 		std::string levelInfo = "(Level info unavailable)";
 		std::string songInfo = "(Song info unavailable)";
@@ -233,7 +232,8 @@ class $modify(MyLevelCell, LevelCell) {
 		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
 	}
 	void hideLevel(const std::string_view reason) {
-		if (!Utils::modEnabled() || (Utils::getBool("dontHideIfRated") && m_level->m_stars.value() != 0)) return;
+		const bool levelIsRated = m_level->m_stars.value() != 0;
+		if (!Utils::modEnabled() || (Utils::getBool("dontHideIfRated") && levelIsRated)) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
 		CCMenu* menu = CCMenu::create();
 		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
@@ -249,6 +249,10 @@ class $modify(MyLevelCell, LevelCell) {
 		button->setPosition(button->getContentSize() / 2.f);
 
 		label->limitLabelWidth(270.f, 1.f, .001f);
+		if (levelIsRated) {
+			if (!m_level->isPlatformer()) label->setColor({240, 211, 42});
+			else label->setColor({50, 200, 255});
+		}
 		label->setPosition({this->m_compactView ? 147.5f : 143.5f, menu->getPositionY()}); // why do i need a ternary for xpos? robtop sucks at ui!!!!
 
 		menu->setID("unhide-level"_spr);
