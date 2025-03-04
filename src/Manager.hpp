@@ -13,10 +13,12 @@ public:
 
 	bool calledAlready = false;
 
+	std::vector<std::string> dislikedWords;
+	std::vector<int> ignoredUsers;
+	std::vector<int> favoriteUsers;
+
 	static Manager* getSharedInstance() {
-		if (!instance) {
-			instance = new Manager();
-		}
+		if (!instance) instance = new Manager();
 		return instance;
 	}
 

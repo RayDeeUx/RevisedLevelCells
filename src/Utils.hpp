@@ -1,4 +1,5 @@
 #pragma once
+#include "Manager.hpp"
 
 using namespace geode::prelude;
 
@@ -16,7 +17,16 @@ namespace Utils {
 	Mod* getMod(const std::string& modID);
 	std::string getModVersion(Mod* mod);
 
+	template<typename T> bool contains(std::span<T> const& span, T const& value) {
+		return std::find(span.begin(), span.end(), value) != span.end();
+	}
+
 	bool isSceneRunning(const std::string& sceneName);
 	bool doesNodeExist(const std::string& parentNodeName, const std::string& nodeName);
 	bool doesNodeExistNoParent(const std::string& nodeName);
+
+	void writeToFile(const std::string_view fileName, int accountID, const std::string_view username);
+	bool addIgnoredUser(int accountID, std::string username);
+	bool addFavoriteUser(int accountID, std::string username);
+	bool updateLists(Manager* manager = Manager::getSharedInstance());
 }

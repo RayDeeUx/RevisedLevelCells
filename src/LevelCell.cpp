@@ -86,10 +86,10 @@ class $modify(MyLevelCell, LevelCell) {
 		const auto levelNameLabelColor = levelNameLabel->getColor();
 		const auto defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
 		auto color = ccColor3B{255, 255, 255};
-		if (featureState == GJFeatureState::Featured) if (Utils::getBool("recolorFeatured")) color = ccColor3B{255, 255, 0}; else return;
-		else if (featureState == GJFeatureState::Epic) if (Utils::getBool("recolorEpic")) color = ccColor3B{255, 90, 75}; else return;
-		else if (featureState == GJFeatureState::Legendary) if (Utils::getBool("recolorLegendary")) color = ccColor3B{255, 0, 255}; else return;
-		else if (featureState == GJFeatureState::Mythic) if (Utils::getBool("recolorMythic")) color = ccColor3B{50, 200, 255}; else return;
+		if (featureState == GJFeatureState::Featured) { if (Utils::getBool("recolorFeatured")) { color = ccColor3B{255, 255, 0}; } else return; }
+		else if (featureState == GJFeatureState::Epic) { if (Utils::getBool("recolorEpic")) { color = ccColor3B{255, 90, 75}; } else return; }
+		else if (featureState == GJFeatureState::Legendary) { if (Utils::getBool("recolorLegendary")) { color = ccColor3B{255, 0, 255}; } else return; }
+		else if (featureState == GJFeatureState::Mythic) { if (Utils::getBool("recolorMythic")) { color = ccColor3B{50, 200, 255}; } else return; }
 		if (color.r == 255 && color.g == 255 && color.b == 255) return;
 		const auto featuredColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), color.r, color.g, color.b);
 		CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
@@ -113,11 +113,8 @@ class $modify(MyLevelCell, LevelCell) {
 			if (defaultSongIsNCSOrML) {
 				colorAlpha = Utils::getColorAlpha("musicLibraryColor");
 				if (ncs && Utils::getBool("recolorNCS")) { colorAlpha = Utils::getColorAlpha("ncsColor"); }
-			} else if (defaultSongIsNewgrounds) {
-				colorAlpha = Utils::getColorAlpha("newgroundsColor");
-			} else {
-				colorAlpha = Utils::getColorAlpha("defaultSongColor");
-			}
+			} else if (defaultSongIsNewgrounds) colorAlpha = Utils::getColorAlpha("newgroundsColor");
+			else colorAlpha = Utils::getColorAlpha("defaultSongColor");
 			songLabel->setColor({colorAlpha.r, colorAlpha.g, colorAlpha.b});
 			songLabel->setOpacity(colorAlpha.a);
 		} else {
@@ -226,23 +223,65 @@ class $modify(MyLevelCell, LevelCell) {
 		if (CCLabelBMFont* localLevelName = typeinfo_cast<CCLabelBMFont*>(getChildByIDRecursive("level-name"))) localLevelName->limitLabelWidth(200.f, .6f, .01f);
 		if (CCNode* mainLayer = getChildByIDRecursive("main-layer")) mainLayer->setPositionY(-3.f);
 	}
+	void determineLevelVisibility(GJGameLevel *level) {
+		if (!Utils::modEnabled()) return;
+		Manager* manager = Manager::getSharedInstance();
+		const std::string& levelName = level->m_levelName;
+		const int accountID = level->m_accountID.value();
+		if (Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelCell::hideLevel("by Ignored User"); // log::info("level {} by {} should be hidden because of user ID", levelName, accountID); // impl function later
+		if (Utils::contains<int>(manager->favoriteUsers, accountID)) return log::info("level {} by {} should be highlighted because user ID", levelName, accountID); // impl function later
+		if (utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
+	}
+	void hideLevel(const std::string_view reason) {
+		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
+		CCMenu* menu = CCMenu::create();
+		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
+		CCMenuItemSpriteExtra* button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(MyLevelCell::unhideLevel));
+		CCLabelBMFont* label = CCLabelBMFont::create(fmt::format("Hidden Level {}", reason).c_str(), "bigFont.fnt");
+
+		menu->setScale(this->m_compactView ? .8f : .9f);
+		menu->addChild(button);
+		menu->ignoreAnchorPointForPosition(false);
+		menu->setContentSize(button->getContentSize());
+		menu->setPosition({this->m_compactView ? 320.f :315.f, this->m_height / 2.f});
+
+		button->setPosition(button->getContentSize() / 2.f);
+
+		label->limitLabelWidth(270.f, 1.f, .001f);
+		label->setPosition({this->m_compactView ? 147.5f : 143.5f, menu->getPositionY()}); // why do i need a ternary for xpos? robtop sucks at ui!!!!
+
+		menu->setID("unhide-level"_spr);
+		label->setID("hidden-reason"_spr);
+		button->setID("unhide-level-button"_spr);
+		buttonSprite->setID("unhide-level-sprite"_spr);
+
+		this->addChild(menu);
+		this->addChild(label);
+	}
+	void unhideLevel(CCObject*) {
+		this->removeChildByID("unhide-level"_spr);
+		this->removeChildByID("hidden-reason"_spr);
+		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(true);
+	}
 	void loadCustomLevelCell() {
 		LevelCell::loadCustomLevelCell();
-		if (!Utils::modEnabled() || !m_mainMenu || !m_level) return;
-		if (Utils::getBool("removePlacement")) removePlacement();
+		GJGameLevel* level = m_level;
+		if (!Utils::modEnabled() || !m_mainMenu || !level) return;
+		if (Utils::getBool("removePlacement")) MyLevelCell::removePlacement();
+		MyLevelCell::determineLevelVisibility(level);
 	}
 	void loadFromLevel(GJGameLevel* level) {
 		LevelCell::loadFromLevel(level);
 		if (!Utils::modEnabled()) return;
 		CCLayer* mainLayer = this->m_mainLayer;
 		if (!mainLayer || !m_level) return;
-		if (Utils::getBool("recolorSongLabels")) applySongRecoloring(mainLayer, m_level);
-		if (Utils::getBool("recolorLevelNameFeaturedScore")) applyFeatureStateRecoloring(mainLayer);
-		if (Utils::getBool("levelDescriptions") && level->m_levelType != GJLevelType::Editor) applyLevelDescriptions(mainLayer);
+		if (Utils::getBool("recolorSongLabels")) MyLevelCell::applySongRecoloring(mainLayer, m_level);
+		if (Utils::getBool("recolorLevelNameFeaturedScore")) MyLevelCell::applyFeatureStateRecoloring(mainLayer);
+		if (Utils::getBool("levelDescriptions") && level->m_levelType != GJLevelType::Editor) MyLevelCell::applyLevelDescriptions(mainLayer);
 	}
 	void draw() {
 		LevelCell::draw();
-		if (!Utils::modEnabled()) return;
-		if (Utils::getBool("blendingText")) applyBlendingText();
+		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || m_fields->blendingApplied) return;
+		MyLevelCell::applyBlendingText();
 	}
 };

@@ -1,4 +1,6 @@
 # RevisedLevelCells Changelog
+## v1.1.0
+- Expanded changes to level cells
 ## v1.0.4
 - A quick oneliner hotfix for a bug report from [Terma](https://github.com/Termantita).
 ## v1.0.3
