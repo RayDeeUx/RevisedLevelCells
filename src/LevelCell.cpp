@@ -229,10 +229,11 @@ class $modify(MyLevelCell, LevelCell) {
 		const std::string& levelName = level->m_levelName;
 		const int accountID = level->m_accountID.value();
 		if (Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelCell::hideLevel("by Ignored User"); // log::info("level {} by {} should be hidden because of user ID", levelName, accountID); // impl function later
-		if (Utils::contains<int>(manager->favoriteUsers, accountID)) return log::info("level {} by {} should be highlighted because user ID", levelName, accountID); // impl function later
+		if (Utils::contains<int>(manager->favoriteUsers, accountID)) return MyLevelCell::highlightLevel();
 		if (utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
 	}
 	void hideLevel(const std::string_view reason) {
+		if (!Utils::modEnabled()) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
 		CCMenu* menu = CCMenu::create();
 		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
@@ -262,6 +263,18 @@ class $modify(MyLevelCell, LevelCell) {
 		this->removeChildByID("unhide-level"_spr);
 		this->removeChildByID("hidden-reason"_spr);
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(true);
+	}
+	void highlightLevel() {
+		if (!Utils::modEnabled()) return;
+		constexpr ccColor4B color = {255, 255, 255, 128};
+		CCLayerGradient* gradientHighlight = CCLayerGradient::create({color.r, color.g, color.b, color.a}, {color.r, color.g, color.b, 0});
+		gradientHighlight->setContentSize(m_backgroundLayer->getContentSize());
+		gradientHighlight->setPosition(m_backgroundLayer->getPosition());
+		m_backgroundLayer->setZOrder(m_backgroundLayer->getZOrder() - 1);
+		gradientHighlight->setZOrder(m_backgroundLayer->getZOrder() + 1);
+		gradientHighlight->ignoreAnchorPointForPosition(true);
+		gradientHighlight->setID("highlight"_spr);
+		this->addChild(gradientHighlight);
 	}
 	void loadCustomLevelCell() {
 		LevelCell::loadCustomLevelCell();
