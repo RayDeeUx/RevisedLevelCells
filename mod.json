@@ -216,6 +216,12 @@
 			"description": "Hide levels/level lists with names containing <co>words or phrases you dislike</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cg>add</c> <cy>or</c> <cr>remove</c> <cy>a word/phrase from your personal phrase filter, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change, and</c> <co>does not apply to your own levels.</c>",
 			"type": "bool",
 			"default": true
+		},
+		"dontHideIfRated": {
+			"name": "Don't Hide Levels/Lists If Rated",
+			"description": "Stops hiding levels/lists if the level/list is rated, regardless of why the level/list should be hidden.",
+			"type": "bool",
+			"default": true
 		}
 	},
 	"dependencies": [

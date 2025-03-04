@@ -233,7 +233,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
 	}
 	void hideLevel(const std::string_view reason) {
-		if (!Utils::modEnabled()) return;
+		if (!Utils::modEnabled() || (Utils::getBool("dontHideIfRated") && m_level->m_stars.value() != 0)) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
 		CCMenu* menu = CCMenu::create();
 		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
