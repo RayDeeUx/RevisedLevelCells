@@ -42,7 +42,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 
 		if (accountIDTarget == -1 || username == "FOOBARBAZ") return;
 		if (accountIDTarget <= 0) return Notification::create("Oof! That's an unregistered user.")->show();
-		if (utils::string::toLower(username) == Manager::getSharedInstance()->username) return Notification::create("Oof! That's an unregistered user.")->show();
+		if (utils::string::toLower(username) == Manager::getSharedInstance()->username) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
 
 		if (isFavorite) {
