@@ -26,6 +26,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 
 		const auto fields = m_fields.self();
 		CCScene* scene = CCScene::get();
+		if (!scene) return log::info("scene was not found? wild imo");
 
 		if (fields->isList) {
 			if (const auto listLayer = typeinfo_cast<LevelListLayer*>(scene->getChildByID("LevelListLayer")); listLayer && listLayer->m_levelList) {
