@@ -49,6 +49,11 @@ namespace Utils {
 			FLAlertLayer::create("Oops!", fmt::format("{} is already in your list of <cy>favorite</c> users.\nRevisit your mod settings if you believe this is a mistake.\n--RevisedLevelCells", username), "Close")->show();
 			return false;
 		}
+		if (contains<int>(manager->ignoredUsers, accountID)) {
+			log::info("tried to ingore user: {} (username: {}) but they are already ignored", accountID, username);
+			Notification::create(fmt::format("{} is already ignored.", username))->show();
+			return false;
+		}
 		log::info("ignoring user: {} (username: {})", accountID, username);
 		manager->ignoredUsers.push_back(accountID);
 		Utils::writeToFile("ignoredUsers.txt", accountID, username);

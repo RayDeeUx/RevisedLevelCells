@@ -32,13 +32,13 @@ class $modify(MyLevelListCell, LevelListCell) {
 		}
 		m_fields->blendingApplied = true;
 	}
-	void hideLevel(const std::string_view reason) {
+	void hideList(const std::string_view reason) {
 		const bool listIsRated = m_levelList->m_diamonds != 0;
 		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || (Utils::getBool("dontHideIfRated") && listIsRated)) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
 		CCMenu* menu = CCMenu::create();
 		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
-		CCMenuItemSpriteExtra* button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(MyLevelListCell::unhideLevel));
+		CCMenuItemSpriteExtra* button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(MyLevelListCell::unhideList));
 		CCLabelBMFont* label = CCLabelBMFont::create(fmt::format("Hidden Level List {}", reason).c_str(), "bigFont.fnt");
 
 		menu->setScale(.9f);
@@ -61,7 +61,7 @@ class $modify(MyLevelListCell, LevelListCell) {
 		this->addChild(menu);
 		this->addChild(label);
 	}
-	void unhideLevel(CCObject*) {
+	void unhideList(CCObject*) {
 		this->removeChildByID("unhide-level"_spr);
 		this->removeChildByID("hidden-reason"_spr);
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(true);
@@ -84,9 +84,9 @@ class $modify(MyLevelListCell, LevelListCell) {
 		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || manager->username == utils::string::toLower(list->m_creatorName)) return;
 		const std::string& levelName = list->m_listName;
 		const int accountID = list->m_accountID;
-		if (Utils::getBool("ignorePeople") && Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelListCell::hideLevel("by Ignored User");
+		if (Utils::getBool("ignorePeople") && Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelListCell::hideList("by Ignored User");
 		if (Utils::getBool("favoriteUsers") && Utils::contains<int>(manager->favoriteUsers, accountID)) return MyLevelListCell::highlightLevel();
-		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelListCell::hideLevel("Name has Disliked Word(s)");
+		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelListCell::hideList("Name has Disliked Word(s)");
 	}
 	void draw() {
 		LevelListCell::draw();
