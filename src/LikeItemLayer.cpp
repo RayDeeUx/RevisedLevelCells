@@ -22,7 +22,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 	}
 	void handleAction(const bool isFavorite = false) {
 		int accountIDTarget = -1;
-		std::string username = "FOOBARBAZ";
+		std::string username = "FOOBARBAZ"_spr;
 
 		const auto fields = m_fields.self();
 		CCScene* scene = CCScene::get();
@@ -40,7 +40,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 			} else return log::info("tried to ignore the author of a level, but could not find the information. the ID of the level was {}", fields->itemID);
 		}
 
-		if (accountIDTarget == -1 || username == "FOOBARBAZ") return;
+		if (accountIDTarget == -1 || username == "FOOBARBAZ"_spr) return;
 		if (accountIDTarget <= 0) return Notification::create("Oof! That's an unregistered user.")->show();
 		if (utils::string::toLower(username) == Manager::getSharedInstance()->username) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
