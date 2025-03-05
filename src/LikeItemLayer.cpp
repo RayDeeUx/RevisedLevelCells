@@ -8,6 +8,7 @@ using namespace geode::prelude;
 
 class $modify(MyLikeItemLayer, LikeItemLayer) {
 	struct Fields {
+		int itemID = 0;
 		bool isList = false;
 	};
 	static void onModify(auto & self) {
@@ -27,15 +28,15 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		CCScene* scene = CCScene::get();
 
 		if (fields->isList) {
-			if (const auto listLayer = typeinfo_cast<LevelListLayer*>(scene->getChildByID("LevelListLayer"))) {
+			if (const auto listLayer = typeinfo_cast<LevelListLayer*>(scene->getChildByID("LevelListLayer")); listLayer && listLayer->m_levelList) {
 				 accountIDTarget = listLayer->m_levelList->m_accountID;
 				 username = listLayer->m_levelList->m_creatorName;
-			} else return;
+			} else return log::info("tried to ignore the author of a list, but could not find the information. the ID of the list was {}", fields->itemID);
 		} else {
-			if (const auto infoLayer = typeinfo_cast<LevelInfoLayer*>(scene->getChildByID("LevelInfoLayer"))) {
+			if (const auto infoLayer = typeinfo_cast<LevelInfoLayer*>(scene->getChildByID("LevelInfoLayer")); infoLayer && infoLayer->m_level) {
 				 accountIDTarget = infoLayer->m_level->m_accountID.value();
 				 username = infoLayer->m_level->m_creatorName;
-			} else return;
+			} else return log::info("tried to ignore the author of a level, but could not find the information. the ID of the level was {}", fields->itemID);
 		}
 
 		if (accountIDTarget == -1 || username == "FOOBARBAZ") return;
@@ -55,7 +56,9 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		if (!Utils::modEnabled() || (!Utils::getBool("applyToLists") && type == LikeItemType::LevelList) || !m_buttonMenu || !m_mainLayer) return true;
 		if (!CCScene::get()->getChildByID("LevelListLayer") && !CCScene::get()->getChildByID("LevelInfoLayer")) return true;
 
-		m_fields->isList = type == LikeItemType::LevelList;
+		const auto fields = m_fields.self();
+		fields->isList = type == LikeItemType::LevelList;
+		fields->itemID = itemID;
 
 		if (Utils::getBool("favoriteUsers")) {
 			CCSprite* favoriteSprite = CCSprite::createWithSpriteFrameName("GJ_starBtn_001.png");
