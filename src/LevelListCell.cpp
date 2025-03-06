@@ -11,7 +11,9 @@ class $modify(MyLevelListCell, LevelListCell) {
 		bool blendingApplied = false;
 	};
 	static void onModify(auto & self) {
+		#ifndef GEODE_IS_WINDOWS
 		(void) self.setHookPriority("LevelListCell::draw", PREFERRED_HOOK_PRIO);
+		#endif
 		(void) self.setHookPriority("LevelListCell::loadFromList", PREFERRED_HOOK_PRIO);
 	}
 	void applyBlendingText() {
@@ -78,19 +80,27 @@ class $modify(MyLevelListCell, LevelListCell) {
 		gradientHighlight->setID("highlight"_spr);
 		this->addChild(gradientHighlight);
 	}
-	void loadFromList(GJLevelList* list) {
-		LevelListCell::loadFromList(list);
+	void determineVisibility() {
 		Manager* manager = Manager::getSharedInstance();
-		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || manager->username == utils::string::toLower(list->m_creatorName)) return;
-		const std::string& levelName = list->m_listName;
-		const int accountID = list->m_accountID;
+		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || manager->username == utils::string::toLower(m_levelList->m_creatorName)) return;
+		const std::string& levelName = m_levelList->m_listName;
+		const int accountID = m_levelList->m_accountID;
 		if (Utils::getBool("ignorePeople") && Utils::contains<int>(manager->ignoredUsers, accountID)) return MyLevelListCell::hideList("by Ignored User");
 		if (Utils::getBool("favoriteUsers") && Utils::contains<int>(manager->favoriteUsers, accountID)) return MyLevelListCell::highlightLevel();
 		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelListCell::hideList("Name has Disliked Word(s)");
 	}
+	void loadFromList(GJLevelList* list) {
+		LevelListCell::loadFromList(list);
+		#ifdef GEODE_IS_WINDOWS
+		if (Utils::modEnabled() && Utils::getBool("applyToLists") && Utils::getBool("blendingText") && !m_fields->blendingApplied) MyLevelListCell::applyBlendingText();
+		#endif
+		MyLevelListCell::determineVisibility();
+	}
+	#ifndef GEODE_IS_WINDOWS
 	void draw() {
 		LevelListCell::draw();
 		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || !Utils::getBool("blendingText") || m_fields->blendingApplied) return;
 		MyLevelListCell::applyBlendingText();
 	}
+	#endif
 };
