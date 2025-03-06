@@ -33,4 +33,5 @@ namespace Utils {
 	void createButton(const std::string& spriteName, CCNode* target, const SEL_MenuHandler function, const std::string_view purpose, CCNode* parent, const CCPoint& position, const float scale = 1.0f);
 
 	void favoriteSuccess(const std::string_view username);
+	void ignoreSuccess(const std::string_view username);
 }
