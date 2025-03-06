@@ -10,18 +10,17 @@ class $modify(MyInfoLayer, InfoLayer) {
 	bool init(GJGameLevel* level, GJUserScore* profile, GJLevelList* list) {
 		if (!InfoLayer::init(level, profile, list)) return false;
 		if (profile || !Utils::modEnabled() || (!Utils::getBool("applyToLists") && list) || !m_mainLayer || !m_buttonMenu || (!Utils::getBool("favoriteUsers") && !Utils::getBool("ignorePeople"))) return true;
-		CCNode* infoButton = m_buttonMenu->getChildByID("info-button");
 		CCNode* creatorButton = m_buttonMenu->getChildByID("creator-button");
-		if (!infoButton || !creatorButton) return true;
+		if (!creatorButton) return true;
 		const bool favoriteUsers = Utils::getBool("favoriteUsers");
 		const bool ignorePeople = Utils::getBool("ignorePeople");
-		const float infoButtonY = infoButton->getPositionY();
+		const float creatorButtonY = creatorButton->getPositionY();
 		float xPosition = creatorButton->getPositionX() + (creatorButton->getContentWidth() / 1.5f) + 2.5f;
 		if (favoriteUsers)
-			Utils::createButton("GJ_starBtn_001.png", this, menu_selector(MyInfoLayer::onFavoriteUser), "favorite", m_buttonMenu, {xPosition, infoButtonY}, .5f);
+			Utils::createButton("GJ_starBtn_001.png", this, menu_selector(MyInfoLayer::onFavoriteUser), "favorite", m_buttonMenu, {xPosition, creatorButtonY}, .5f);
 		if (ignorePeople) {
 			if (favoriteUsers) xPosition += infoButton->getContentWidth();
-			Utils::createButton("accountBtn_blocked_001.png", this, menu_selector(MyInfoLayer::onIgnoreUser), "ignore", m_buttonMenu, {xPosition, infoButtonY}, .5f);
+			Utils::createButton("accountBtn_blocked_001.png", this, menu_selector(MyInfoLayer::onIgnoreUser), "ignore", m_buttonMenu, {xPosition, creatorButtonY}, .5f);
 		}
 		return true;
 	}
@@ -49,9 +48,9 @@ class $modify(MyInfoLayer, InfoLayer) {
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
 
 		if (isFavorite) {
-			if (Utils::addFavoriteUser(accountIDTarget, username)) Notification::create(fmt::format("{} is now a favorite user!", username))->show();
+			if (Utils::addFavoriteUser(accountIDTarget, username)) Utils::favoriteSuccess(username);
 			return;
 		}
-		if (Utils::addIgnoredUser(accountIDTarget, username)) return Notification::create(fmt::format("{} has been ignored.", username))->show();
+		if (Utils::addIgnoredUser(accountIDTarget, username)) return Utils::ignoreSuccess(username);
 	}
 };

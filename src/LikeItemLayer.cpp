@@ -46,10 +46,10 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
 
 		if (isFavorite) {
-			if (Utils::addFavoriteUser(accountIDTarget, username)) Notification::create(fmt::format("{} is now a favorite user!", username))->show();
+			if (Utils::addFavoriteUser(accountIDTarget, username)) Utils::favoriteSuccess(username);
 			return;
 		}
-		if (Utils::addIgnoredUser(accountIDTarget, username)) return Notification::create(fmt::format("{} has been ignored.", username))->show();
+		if (Utils::addIgnoredUser(accountIDTarget, username)) return Utils::ignoreSuccess(username);
 	}
 	bool init(LikeItemType type, int itemID, int p2) {
 		if (!LikeItemLayer::init(type, itemID, p2)) return false;

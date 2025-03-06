@@ -1,6 +1,13 @@
 # RevisedLevelCells Changelog
 ## v1.1.0
-- Expanded changes to level cells
+- Added personal phrases filter and ignored/favorite users systems!
+  - Also supports LevelListCells!
+  - Additional options to hide LevelCells and LevelListCells of rated levels/lists.
+  - There will not be a "syncing with VariousCommentTweaks" option.
+  - There will also not be a "ignore specific level ID" option.
+- Expand `Readable chatFont Labels` support to LevelListCells.
+- Softtoggle to disable that this mod makes on LevelListCells specifically.
+- Partially known issue: level list placement removal might not 100% work. A consistent patchfix for this bug will come when it's ready.
 ## v1.0.4
 - A quick oneliner hotfix for a bug report from [Terma](https://github.com/Termantita).
 ## v1.0.3

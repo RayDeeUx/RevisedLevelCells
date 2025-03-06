@@ -166,4 +166,13 @@ namespace Utils {
 		parent->addChild(button);
 		button->setPosition(position);
 	}
+
+	void favoriteSuccess(const std::string_view username) {
+		return Notification::create(fmt::format("{} is now a favorite user!", username))->show();
+	}
+
+	void ignoreSuccess(const std::string_view username) {
+		if (Utils::getBool("dontHideIfRated")) return Notification::create(fmt::format("{} has been ignored.\nRated levels/lists from ignored users are still visible.", username))->show();
+		return Notification::create(fmt::format("{} has been ignored.\nRated levels/lists from ignored users will also be hidden.", username))->show();
+	}
 }
