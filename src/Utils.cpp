@@ -156,4 +156,14 @@ namespace Utils {
 		}
 		return true;
 	}
+
+	void createButton(const std::string& spriteName, CCNode* target, const SEL_MenuHandler function, const std::string_view purpose, CCNode* parent, const CCPoint& position, const float scale) {
+		CCSprite* sprite = CCSprite::createWithSpriteFrameName(spriteName.c_str());
+		sprite->setID(fmt::format("{}-sprite"_spr, purpose));
+		sprite->setScale(scale);
+		CCMenuItemSpriteExtra* button = CCMenuItemSpriteExtra::create(sprite, target, function);
+		button->setID(fmt::format("{}-button"_spr, purpose));
+		parent->addChild(button);
+		button->setPosition(position);
+	}
 }

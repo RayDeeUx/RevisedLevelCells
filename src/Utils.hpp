@@ -29,4 +29,6 @@ namespace Utils {
 	bool addIgnoredUser(int accountID, std::string username);
 	bool addFavoriteUser(int accountID, std::string username);
 	bool updateLists(Manager* manager = Manager::getSharedInstance());
+
+	void createButton(const std::string& spriteName, CCNode* target, const SEL_MenuHandler function, const std::string_view purpose, CCNode* parent, const CCPoint& position, const float scale = 1.0f);
 }

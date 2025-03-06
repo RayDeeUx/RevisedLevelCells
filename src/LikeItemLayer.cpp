@@ -54,29 +54,17 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 	bool init(LikeItemType type, int itemID, int p2) {
 		if (!LikeItemLayer::init(type, itemID, p2)) return false;
 		if (type != LikeItemType::Level && type != LikeItemType::LevelList) return true;
-		if (!Utils::modEnabled() || (!Utils::getBool("applyToLists") && type == LikeItemType::LevelList) || !m_buttonMenu || !m_mainLayer) return true;
+		if (!Utils::modEnabled() || (!Utils::getBool("applyToLists") && type == LikeItemType::LevelList) || !m_buttonMenu || !m_mainLayer || (!Utils::getBool("favoriteUsers") && !Utils::getBool("ignorePeople"))) return true;
 		if (!CCScene::get()->getChildByID("LevelListLayer") && !CCScene::get()->getChildByID("LevelInfoLayer")) return true;
 
 		const auto fields = m_fields.self();
 		fields->isList = type == LikeItemType::LevelList;
 		fields->itemID = itemID;
 
-		if (Utils::getBool("favoriteUsers")) {
-			CCSprite* favoriteSprite = CCSprite::createWithSpriteFrameName("GJ_starBtn_001.png");
-			favoriteSprite->setID("favorite-sprite"_spr);
-			CCMenuItemSpriteExtra* favorite = CCMenuItemSpriteExtra::create(favoriteSprite, this, menu_selector(MyLikeItemLayer::onFavoriteUser));
-			favorite->setID("favorite-button"_spr);
-			m_buttonMenu->addChild(favorite);
-			favorite->setPosition({-98.f, -55.f});
-		}
-		if (Utils::getBool("ignorePeople")) {
-			CCSprite* ignoreSprite = CCSprite::createWithSpriteFrameName("accountBtn_blocked_001.png");
-			ignoreSprite->setID("ignore-sprite"_spr);
-			CCMenuItemSpriteExtra* ignore = CCMenuItemSpriteExtra::create(ignoreSprite, this, menu_selector(MyLikeItemLayer::onIgnoreUser));
-			ignore->setID("ignore-button"_spr);
-			m_buttonMenu->addChild(ignore);
-			ignore->setPosition({98.f, -55.f});
-		}
+		if (Utils::getBool("favoriteUsers"))
+			Utils::createButton("GJ_starBtn_001.png", this, menu_selector(MyLikeItemLayer::onFavoriteUser), "favorite", m_buttonMenu, {-98.f, -55.f});
+		if (Utils::getBool("ignorePeople"))
+			Utils::createButton("accountBtn_blocked_001.png", this, menu_selector(MyLikeItemLayer::onIgnoreUser), "ignore", m_buttonMenu, {98.f, -55.f});
 		return true; // T0D0: InfoLayer hook, add to main-menu node using manual positioning
 	}
 };
