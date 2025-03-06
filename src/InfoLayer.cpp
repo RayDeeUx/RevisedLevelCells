@@ -10,8 +10,9 @@ class $modify(MyInfoLayer, InfoLayer) {
 	bool init(GJGameLevel* level, GJUserScore* profile, GJLevelList* list) {
 		if (!InfoLayer::init(level, profile, list)) return false;
 		if (profile || !Utils::modEnabled() || (!Utils::getBool("applyToLists") && list) || !m_mainLayer || !m_buttonMenu || (!Utils::getBool("favoriteUsers") && !Utils::getBool("ignorePeople"))) return true;
+		CCNode* infoButton = m_buttonMenu->getChildByID("info-button");
 		CCNode* creatorButton = m_buttonMenu->getChildByID("creator-button");
-		if (!creatorButton) return true;
+		if (!infoButton || !creatorButton) return true;
 		const bool favoriteUsers = Utils::getBool("favoriteUsers");
 		const bool ignorePeople = Utils::getBool("ignorePeople");
 		const float creatorButtonY = creatorButton->getPositionY();
