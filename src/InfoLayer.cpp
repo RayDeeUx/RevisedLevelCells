@@ -25,10 +25,10 @@ class $modify(MyInfoLayer, InfoLayer) {
 		}
 		return true;
 	}
-	void onFavoriteUser(CCObject*) const {
+	void onFavoriteUser(CCObject*) {
 		MyInfoLayer::handleAction(true);
 	}
-	void onIgnoreUser(CCObject*) const {
+	void onIgnoreUser(CCObject*) {
 		MyInfoLayer::handleAction();
 	}
 	void handleAction(const bool isFavorite = false) const {
