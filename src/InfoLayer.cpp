@@ -12,6 +12,18 @@ class $modify(MyInfoLayer, InfoLayer) {
 		if (profile || !Utils::modEnabled() || (!Utils::getBool("applyToLists") && list) || !m_mainLayer || !m_buttonMenu || (!Utils::getBool("favoriteUsers") && !Utils::getBool("ignorePeople"))) return true;
 		CCNode* infoButton = m_buttonMenu->getChildByID("info-button");
 		CCNode* creatorButton = m_buttonMenu->getChildByID("creator-button");
+		if (m_buttonMenu->getChildByID("original-level-button")) {
+			int multiplier = 1;
+			if (Utils::getBool("favoriteUsers")) {
+				Utils::createButton("GJ_starBtn_001.png", this, menu_selector(MyInfoLayer::onFavoriteUser), "favorite", m_buttonMenu, {infoButton->getPositionX() - (infoButton->getContentWidth() * multiplier) - 2.5f, infoButton->getPositionY()}, .5f);
+				multiplier += 1;
+			}
+			if (Utils::getBool("ignorePeople")) {
+				Utils::createButton("accountBtn_blocked_001.png", this, menu_selector(MyInfoLayer::onIgnoreUser), "ignore", m_buttonMenu, {infoButton->getPositionX() - (infoButton->getContentWidth() * multiplier) - 2.5f, infoButton->getPositionY()}, .5f);
+			}
+			return true;
+			// i really HATE the "oRiGiNaL" level button as if originality in GD levels isnt already a godforsaken farce in this day and age
+		}
 		if (!infoButton || !creatorButton) return true;
 		const bool favoriteUsers = Utils::getBool("favoriteUsers");
 		const bool ignorePeople = Utils::getBool("ignorePeople");
