@@ -61,9 +61,9 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		fields->isList = type == LikeItemType::LevelList;
 		fields->itemID = itemID;
 
-		if (Utils::getBool("favoriteUsers"))
+		if (Utils::getBool("favoriteUsers") && !Utils::getBool("dontAddFavoriteButton"))
 			Utils::createButton("GJ_starBtn_001.png", this, menu_selector(MyLikeItemLayer::onFavoriteUser), "favorite", m_buttonMenu, {-98.f, -55.f});
-		if (Utils::getBool("ignorePeople"))
+		if (Utils::getBool("ignorePeople") && !Utils::getBool("dontAddIgnoreButton"))
 			Utils::createButton("accountBtn_blocked_001.png", this, menu_selector(MyLikeItemLayer::onIgnoreUser), "ignore", m_buttonMenu, {98.f, -55.f});
 		return true; // T0D0: InfoLayer hook, add to main-menu node using manual positioning
 	}

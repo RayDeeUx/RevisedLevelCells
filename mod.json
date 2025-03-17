@@ -211,11 +211,21 @@
 			"type": "rgba",
 			"default": [240, 211, 42, 150]
 		},
+		"dontAddFavoriteButton": {
+			"name": "Don't Add Favorite Button",
+			"type": "bool",
+			"default": false
+		},
 		"ignorePeople": {
 			"name": "Hide Levels/Lists From Ignored People",
 			"description": "Hide levels/level lists from <co>people you \"ignore\"</c>, based on <cl>text files inside this mod's config directory</c>.\n<cy>To</c> <cr>remove</c> <cy>someone from your ignored users list, visit</c> <cl>this mod's config directory</c><cy>, edit the relevant text file, and</c> <cp>refresh your lists.</c>\n\n<cy>This is a purely cosmetic change.</c>\n<cr>BLOCKING PEOPLE THROUGH PROFILES DOES</c> <c_>NOT</c> <cr>PRODUCE THE SAME EFFECT AS \"IGNORING\" PEOPLE.</c>",
 			"type": "bool",
 			"default": true
+		},
+		"dontAddIgnoreButton": {
+			"name": "Don't Add Ignore Button",
+			"type": "bool",
+			"default": false
 		},
 		"personalFilter": {
 			"name": "Personal Phrases Filter",
