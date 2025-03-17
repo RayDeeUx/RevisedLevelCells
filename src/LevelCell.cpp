@@ -1,3 +1,4 @@
+#include <Geode/modify/LevelListLayer.hpp>
 #include <Geode/modify/LevelCell.hpp>
 #include "Manager.hpp"
 #include "Utils.hpp"
@@ -33,9 +34,9 @@ class $modify(MyLevelCell, LevelCell) {
 		return Utils::getString("levelDescriptionsPosition");
 		#endif
 	}
-	void onShowLevelDesc(CCObject* sender) {
+	void onShowLevelDesc(CCObject*) {
 		if (!Utils::modEnabled()) return;
-		const auto theLevel = this->m_level;
+		GJGameLevel* theLevel = this->m_level;
 		if (theLevel->m_levelType == GJLevelType::Local || theLevel->m_levelType == GJLevelType::Local) return;
 		std::string levelDesc = theLevel->getUnpackedLevelDescription();
 		if (levelDesc.empty()) {
@@ -50,7 +51,7 @@ class $modify(MyLevelCell, LevelCell) {
 		}
 		std::string levelInfo = "(Level info unavailable)";
 		std::string songInfo = "(Song info unavailable)";
-		if (const auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID)) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
+		if (SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID)) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
 		levelInfo = fmt::format("Level ID: <cy>{}</c>\nSong: <cy>{}</c>", theLevel->m_levelID.value(), songInfo);
 		if (!std::string(theLevel->m_songIDs).empty()) levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
 		if (!std::string(theLevel->m_sfxIDs).empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", std::regex_replace(std::string(theLevel->m_sfxIDs), std::regex(","), ", ")));
@@ -66,37 +67,37 @@ class $modify(MyLevelCell, LevelCell) {
 			1.0f
 		)->show();
 	}
-	void addColorToSequence(CCArray *arrayOfSequences, ccColor4B color) {
+	static void addColorToSequence(CCArray *arrayOfSequences, const ccColor4B color) {
 		if (!Utils::modEnabled()) return;
 		arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
 	}
 	static void applyFeatureStateRecoloring(CCLayer* mainLayer) {
 		if (!Utils::modEnabled() || !Utils::getBool("recolorLevelNameFeaturedScore")) return;
-		const auto diffContainerNode = mainLayer->getChildByIDRecursive("difficulty-container");
+		CCNode* diffContainerNode = mainLayer->getChildByIDRecursive("difficulty-container");
 		if (!diffContainerNode) return;
-		const auto diffSpriteNode = diffContainerNode->getChildByIDRecursive("difficulty-sprite");
+		CCNode* diffSpriteNode = diffContainerNode->getChildByIDRecursive("difficulty-sprite");
 		if (!diffSpriteNode) return;
-		const auto diffSprite = typeinfo_cast<GJDifficultySprite*>(diffSpriteNode);
+		const GJDifficultySprite* diffSprite = typeinfo_cast<GJDifficultySprite*>(diffSpriteNode);
 		if (!diffSprite) return;
 		const auto levelNameLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("level-name"));
-		const auto featureState = diffSprite->m_featureState;
+		const GJFeatureState featureState = diffSprite->m_featureState;
 		if (!levelNameLabel || featureState == GJFeatureState::None) return;
-		const auto levelNameLabelColor = levelNameLabel->getColor();
-		const auto defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), levelNameLabelColor.r, levelNameLabelColor.g, levelNameLabelColor.b);
+		const auto [r, g, b] = levelNameLabel->getColor();
+		CCTintTo* defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), r, g, b);
 		auto color = ccColor3B{255, 255, 255};
 		if (featureState == GJFeatureState::Featured) { if (Utils::getBool("recolorFeatured")) { color = ccColor3B{255, 255, 0}; } else return; }
 		else if (featureState == GJFeatureState::Epic) { if (Utils::getBool("recolorEpic")) { color = ccColor3B{255, 90, 75}; } else return; }
 		else if (featureState == GJFeatureState::Legendary) { if (Utils::getBool("recolorLegendary")) { color = ccColor3B{255, 0, 255}; } else return; }
 		else if (featureState == GJFeatureState::Mythic) { if (Utils::getBool("recolorMythic")) { color = ccColor3B{50, 200, 255}; } else return; }
 		if (color.r == 255 && color.g == 255 && color.b == 255) return;
-		const auto featuredColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), color.r, color.g, color.b);
+		CCTintTo* featuredColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), color.r, color.g, color.b);
 		CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
 		CCAction* repeat = CCRepeatForever::create(sequence);
 		levelNameLabel->runAction(repeat);
 	}
-	void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
+	static void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
 		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels")) return;
-		const auto songName = mainLayer->getChildByIDRecursive("song-name");
+		CCNode* songName = mainLayer->getChildByIDRecursive("song-name");
 		if (!songName) return;
 		const auto songLabel = typeinfo_cast<CCLabelBMFont*>(songName);
 		if (!songLabel) return;
@@ -121,25 +122,19 @@ class $modify(MyLevelCell, LevelCell) {
 			int defaultSongs = 0;
 			int ncsSongs = 0;
 			int musicLibrarySongs = 0;
-			for (const auto& songIDString : songIDVector) {
+			for (const std::string& songIDString : songIDVector) {
 				int songIDInt = utils::numFromString<int>(songIDString).unwrapOr(INT_MIN);
 				if (songIDInt == INT_MIN) { continue; }
-				ccColor4B colorToAdd;
 				if (songIDInt >= 10000000) {
 					auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(songIDInt);
 					if (!songInfoObject) { continue; }
 					if (utils::string::toLower(std::string(songInfoObject->m_songUrl)).find("ncs") != std::string::npos && Utils::getBool("recolorNCS")) {
 						ncsSongs++;
-					} else {
-						musicLibrarySongs++;
-					}
-				} else if (songIDInt >= 1) {
-					ngSongs++;
-				} else {
-					defaultSongs++;
-				}
+					} else musicLibrarySongs++;
+				} else if (songIDInt >= 1) ngSongs++;
+				else defaultSongs++;
 			}
-			auto arrayOfSequences = CCArray::create();
+			CCArray* arrayOfSequences = CCArray::create();
 			if ((ncsSongs > 0 || ncs) && Utils::getBool("recolorNCS")) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
 			if (defaultSongs > 0 || defaultSongID < 1) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
 			if (ngSongs > 0) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
@@ -151,14 +146,14 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void applyLevelDescriptions(CCLayer* mainLayer) {
 		if (!Utils::modEnabled() || !Utils::getBool("levelDescriptions") || m_level->m_levelType == GJLevelType::Editor) return;
-		const auto viewButton = mainLayer->getChildByIDRecursive("view-button");
+		CCNode* viewButton = mainLayer->getChildByIDRecursive("view-button");
 		if (!viewButton) return;
-		const auto infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+		CCSprite* infoButton = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
 		infoButton->setScale(getInfoButtonScale());
 		if (Utils::getDouble("levelDescriptionScale") > .6f) infoButton->setScale(.6f);
-		auto descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
+		CCMenuItemSpriteExtra* descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
-		auto buttonPosSetting = getInfoButtonLocation();
+		const std::string& buttonPosSetting = getInfoButtonLocation();
 		if (buttonPosSetting == "Bottom Left of Level Cell") {
 			descButton->setPosition({
 				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
@@ -179,26 +174,9 @@ class $modify(MyLevelCell, LevelCell) {
 		}
 		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
 	}
-	void removePlacement() const {
-		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !m_mainMenu || !m_mainLayer || m_level->m_listPosition == 0 || !CCScene::get()->getChildByType<LevelListLayer>(0)) return;
-		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
-		if (CCNode* placementLabel = m_mainLayer->getChildByID("level-place")) placementLabel->setVisible(false);
-		for (CCNode* child : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
-			if (child->getID() == "main-menu") continue;
-			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
-		}
-		for (CCNode* child : CCArrayExt<CCNode*>(m_mainMenu->getChildren())) {
-			if (child->getID() == "view-button") continue;
-			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
-		}
-		if (CCNode* viewButton = m_mainMenu->getChildByID("view-button")) {
-			if (CCNode* node = m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
-			if (CCNode* node = m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
-		}
-	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
-		for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
+		for (CCNode* node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
 			if (const auto label = typeinfo_cast<CCLabelBMFont*>(node)) {
 				if (std::string(label->getFntFile()) == "chatFont.fnt") {
 					label->setBlendFunc({GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA});
@@ -283,7 +261,6 @@ class $modify(MyLevelCell, LevelCell) {
 		LevelCell::loadCustomLevelCell();
 		GJGameLevel* level = m_level;
 		if (!Utils::modEnabled() || !m_mainMenu || !level) return;
-		if (Utils::getBool("removePlacement")) MyLevelCell::removePlacement();
 		MyLevelCell::determineLevelVisibility(level);
 	}
 	void loadFromLevel(GJGameLevel* level) {
@@ -299,5 +276,44 @@ class $modify(MyLevelCell, LevelCell) {
 		LevelCell::draw();
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || m_fields->blendingApplied) return;
 		MyLevelCell::applyBlendingText();
+	}
+};
+
+class $modify(MyLevelListLayer, LevelListLayer) {
+	struct Fields {
+		bool alreadyMoved = false;
+	};
+	static void removePlacement(const LevelCell* levelCell) {
+		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !levelCell->m_mainMenu || !levelCell->m_mainLayer || levelCell->m_level->m_listPosition == 0) return;
+		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
+		if (CCNode* placementLabel = levelCell->m_mainLayer->getChildByID("level-place")) placementLabel->setVisible(false);
+		for (CCNode* child : CCArrayExt<CCNode*>(levelCell->m_mainLayer->getChildren())) {
+			if (const std::string& childID = child->getID(); childID == "main-menu" || utils::string::startsWith(childID, ""_spr)) continue;
+			if (const auto label = typeinfo_cast<CCLabelBMFont*>(child); label && static_cast<std::string>(label->getFntFile()) == "chatFont.fnt") continue;
+			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
+		}
+		for (CCNode* child : CCArrayExt<CCNode*>(levelCell->m_mainMenu->getChildren())) {
+			if (const std::string& childID = child->getID(); childID == "view-button" || utils::string::startsWith(childID, ""_spr)) continue;
+			child->setPositionX(child->getPositionX() - LEVEL_PLACEMENT_OFFSET);
+		}
+		if (levelCell->m_mainMenu->getChildByID("view-button")) {
+			if (CCNode* node = levelCell->m_mainLayer->getChildByID("completed-icon")) node->setPosition({276.f, 25.f});
+			if (CCNode* node = levelCell->m_mainLayer->getChildByID("percentage-label")) node->setPosition({276.f, 25.f});
+		}
+	}
+	// need to hook this for when downloading a list for the first time
+	void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) {
+		LevelListLayer::loadLevelsFinished(p0, p1, p2);
+		if (!Utils::getBool("removePlacement")) return;
+		if (!m_list || !m_list->m_listView || !m_list->m_listView->m_tableView || !m_list->m_listView->m_tableView->m_cellArray || !typeinfo_cast<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray->objectAtIndex(0))) return log::info("could not find the place where level cell entries are stored");
+		for (const LevelCell* levelCell : CCArrayExt<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray)) MyLevelListLayer::removePlacement(levelCell);
+	}
+	// need to hook this when exiting the LevelInfoLayer. also the m_fields access prevents moving the nodes more than once between level entry/exiting
+	void onEnter() {
+		LevelListLayer::onEnter();
+		if (!Utils::getBool("removePlacement") || m_fields->alreadyMoved) return;
+		if (!m_list || !m_list->m_listView || !m_list->m_listView->m_tableView || !m_list->m_listView->m_tableView->m_cellArray || !typeinfo_cast<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray->objectAtIndex(0))) return log::info("could not find the place where level cell entries are stored");
+		m_fields->alreadyMoved = true;
+		for (const LevelCell* levelCell : CCArrayExt<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray)) MyLevelListLayer::removePlacement(levelCell);
 	}
 };
