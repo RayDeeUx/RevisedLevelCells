@@ -95,9 +95,9 @@ class $modify(MyLevelCell, LevelCell) {
 	static void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
 		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels")) return;
 		CCNode* songName = mainLayer->getChildByIDRecursive("song-name");
-		if (!songName) return log::info("could not find songName");
+		if (!songName) return;
 		const auto songLabel = typeinfo_cast<CCLabelBMFont*>(songName);
-		if (!songLabel) return log::info("could not find songLabel");
+		if (!songLabel) return;
 		const std::string& songIDs = level->m_songIDs;
 		const int defaultSongID = level->m_songID;
 		const bool ncs = mainLayer->getChildByIDRecursive("ncs-icon");
