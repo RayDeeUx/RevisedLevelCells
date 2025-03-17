@@ -1,4 +1,9 @@
 # RevisedLevelCells Changelog
+## v1.1.1
+- Fix the consistency where level placements for level cells weren't being removed in some edge cases.
+- Refactor a few things here and there.
+- Added Jane Wickline.
+  - Probably the most controversial change to any of my mods; this specific change might get reverted in the next update. We'll find out together in August.
 ## v1.1.0
 - Added personal phrases filter and ignored/favorite users systems!
   - Also supports LevelListCells!

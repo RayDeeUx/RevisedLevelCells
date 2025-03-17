@@ -59,12 +59,9 @@ class $modify(MyLevelCell, LevelCell) {
 			nullptr,
 			theLevel->m_levelName.c_str(),
 			fmt::format("Published by {}\n\n{}\n\n{}", theLevel->m_creatorName, levelDesc, levelInfo),
-			"Close",
-			nullptr,
-			420.f,
+			"Close", nullptr, 420.f,
 			levelInfo.length() > 300,
-			320.f,
-			1.0f
+			320.f, 1.0f
 		)->show();
 	}
 	static void addColorToSequence(CCArray *arrayOfSequences, const ccColor4B color) {
@@ -98,37 +95,37 @@ class $modify(MyLevelCell, LevelCell) {
 	static void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
 		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels")) return;
 		CCNode* songName = mainLayer->getChildByIDRecursive("song-name");
-		if (!songName) return;
+		if (!songName) return log::info("could not find songName");
 		const auto songLabel = typeinfo_cast<CCLabelBMFont*>(songName);
-		if (!songLabel) return;
-		const std::string songIDs = level->m_songIDs;
+		if (!songLabel) return log::info("could not find songLabel");
+		const std::string& songIDs = level->m_songIDs;
 		const int defaultSongID = level->m_songID;
 		const bool ncs = mainLayer->getChildByIDRecursive("ncs-icon");
 		const bool songIDsEmpty = songIDs.empty();
 		const bool defaultSongIsNCSOrML = defaultSongID >= 10000000;
 		const bool defaultSongIsNewgrounds = defaultSongID >= 1 && defaultSongID < 10000000;
-		if (!Utils::getBool("cycleThroughColors") || songIDsEmpty || songIDs.find(',') == std::string::npos) {
+		if (!Utils::getBool("cycleThroughColors") || songIDsEmpty || !utils::string::contains(songIDs, ',')) {
 			ccColor4B colorAlpha;
 			if (defaultSongIsNCSOrML) {
 				colorAlpha = Utils::getColorAlpha("musicLibraryColor");
-				if (ncs && Utils::getBool("recolorNCS")) { colorAlpha = Utils::getColorAlpha("ncsColor"); }
+				if (ncs && Utils::getBool("recolorNCS")) colorAlpha = Utils::getColorAlpha("ncsColor");
 			} else if (defaultSongIsNewgrounds) colorAlpha = Utils::getColorAlpha("newgroundsColor");
 			else colorAlpha = Utils::getColorAlpha("defaultSongColor");
 			songLabel->setColor({colorAlpha.r, colorAlpha.g, colorAlpha.b});
 			songLabel->setOpacity(colorAlpha.a);
 		} else {
-			std::vector<std::string> songIDVector = utils::string::split(songIDs, ",");
+			const std::vector<std::string> songIDVector = utils::string::split(songIDs, ",");
 			int ngSongs = 0;
 			int defaultSongs = 0;
 			int ncsSongs = 0;
 			int musicLibrarySongs = 0;
 			for (const std::string& songIDString : songIDVector) {
-				int songIDInt = utils::numFromString<int>(songIDString).unwrapOr(INT_MIN);
-				if (songIDInt == INT_MIN) { continue; }
+				const int songIDInt = utils::numFromString<int>(songIDString).unwrapOr(INT_MIN);
+				if (songIDInt == INT_MIN) continue;
 				if (songIDInt >= 10000000) {
-					auto songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(songIDInt);
-					if (!songInfoObject) { continue; }
-					if (utils::string::toLower(std::string(songInfoObject->m_songUrl)).find("ncs") != std::string::npos && Utils::getBool("recolorNCS")) {
+					const SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(songIDInt);
+					if (!songInfoObject) continue;
+					if (utils::string::contains(utils::string::toLower(static_cast<std::string>(songInfoObject->m_songUrl)), "ncs") && Utils::getBool("recolorNCS")) {
 						ncsSongs++;
 					} else musicLibrarySongs++;
 				} else if (songIDInt >= 1) ngSongs++;
@@ -172,7 +169,7 @@ class $modify(MyLevelCell, LevelCell) {
 				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
 			});
 		}
-		if (buttonPosSetting.find_first_of("Level Cell") != std::string::npos || buttonPosSetting.find_first_of(" Button") != std::string::npos) getChildByIDRecursive("main-menu")->addChild(descButton);
+		if (utils::string::endsWith(buttonPosSetting, " Level Cell") || utils::string::endsWith(buttonPosSetting, " Button")) m_mainMenu->addChild(descButton);
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
