@@ -1,13 +1,14 @@
 {
-	"geode": "4.0.1",
+	"geode": "4.3.1",
 	"gd": {
 		"win": "2.2074",
 		"mac": "2.2074",
-		"android": "2.2074"
+		"android": "2.2074",
+		"ios": "2.2074"
 	},
 	"id": "raydeeux.revisedlevelcells",
 	"name": "RevisedLevelCells",
-	"version": "v1.1.1",
+	"version": "v1.1.2",
 	"developer": "RayDeeUx",
 	"description": "Revise level cells just a smidge.",
 	"repository": "https://github.com/RayDeeUx/RevisedLevelCells",
@@ -68,12 +69,12 @@
 			"name": "Level Descriptions Button Scale",
 			"type": "float",
 			"default": {
-				"win": 0.60,
-				"mac": 0.60,
-				"android": 0.60
+				"win": 0.6,
+				"mac": 0.6,
+				"android": 0.6
 			},
-			"min": 0.10,
-			"max": 0.60,
+			"min": 0.1,
+			"max": 0.6,
 			"control": {
 				"input": true,
 				"slider": true,
@@ -98,18 +99,33 @@
 			"name": "Default Songs Color",
 			"description": "Set this to <cj>(40, 210, 255)</c> to keep the original color for levels that use default songs.",
 			"type": "rgba",
-			"default": [40, 210, 255, 255]
+			"default": [
+				40,
+				210,
+				255,
+				255
+			]
 		},
 		"newgroundsColor": {
 			"name": "Newgrounds Songs Color",
 			"description": "Set this to <cd>(255, 130, 255)</c> to keep the original color for songs from Newgrounds.",
 			"type": "rgba",
-			"default": [255, 130, 255, 255]
+			"default": [
+				255,
+				130,
+				255,
+				255
+			]
 		},
 		"musicLibraryColor": {
 			"name": "Music Library Songs Color",
 			"type": "rgba",
-			"default": [130, 255, 255, 255]
+			"default": [
+				130,
+				255,
+				255,
+				255
+			]
 		},
 		"recolorNCS": {
 			"name": "Also Recolor NCS Songs",
@@ -120,7 +136,12 @@
 		"ncsColor": {
 			"name": "NCS Songs Color",
 			"type": "rgba",
-			"default": [255, 255, 130, 255]
+			"default": [
+				255,
+				255,
+				130,
+				255
+			]
 		},
 		"cycleThroughColors": {
 			"name": "Cycle Through Above Colors",
@@ -134,7 +155,7 @@
 			"type": "float",
 			"default": 1.5,
 			"min": 0.01,
-			"max": 2.00,
+			"max": 2,
 			"control": {
 				"input": true,
 				"slider": true,
@@ -177,7 +198,7 @@
 			"type": "float",
 			"default": 1.5,
 			"min": 0.01,
-			"max": 2.00,
+			"max": 2,
 			"control": {
 				"input": true,
 				"slider": true,
@@ -209,7 +230,12 @@
 		"favoriteUserColor": {
 			"name": "Favorite User Highlight Color",
 			"type": "rgba",
-			"default": [240, 211, 42, 150]
+			"default": [
+				240,
+				211,
+				42,
+				150
+			]
 		},
 		"dontAddFavoriteButton": {
 			"name": "Don't Add Favorite Button",
