@@ -1,3 +1,4 @@
+#ifndef GEODE_IS_IOS
 #include <Geode/modify/LikeItemLayer.hpp>
 #include "Manager.hpp"
 #include "Utils.hpp"
@@ -68,3 +69,4 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		return true; // T0D0: InfoLayer hook, add to main-menu node using manual positioning
 	}
 };
+#endif
