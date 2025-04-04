@@ -1,3 +1,4 @@
+#ifndef GEODE_IS_IOS
 #include <Geode/modify/InfoLayer.hpp>
 #include "Manager.hpp"
 #include "Utils.hpp"
@@ -69,3 +70,4 @@ class $modify(MyInfoLayer, InfoLayer) {
 		if (Utils::addIgnoredUser(accountIDTarget, username)) return Utils::ignoreSuccess(username);
 	}
 };
+#endif
