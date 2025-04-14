@@ -1,4 +1,6 @@
 # RevisedLevelCells Changelog
+## v1.1.2
+- Some [adjective describing a person] reported a "crash" that shouldn't even be possible, so here we are.
 ## v1.1.1
 - Fix the consistency where level placements for level cells weren't being removed in some edge cases.
 - Refactor a few things here and there.
