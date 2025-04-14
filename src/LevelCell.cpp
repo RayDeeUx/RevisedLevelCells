@@ -77,10 +77,12 @@ class $modify(MyLevelCell, LevelCell) {
 		const GJDifficultySprite* diffSprite = typeinfo_cast<GJDifficultySprite*>(diffSpriteNode);
 		if (!diffSprite) return;
 		const auto levelNameLabel = typeinfo_cast<CCLabelBMFont*>(mainLayer->getChildByIDRecursive("level-name"));
+		if (!levelNameLabel) return log::info("no levelNameLabel node");
 		const GJFeatureState featureState = diffSprite->m_featureState;
-		if (!levelNameLabel || featureState == GJFeatureState::None) return;
+		if (featureState == GJFeatureState::None) return;
 		const auto [r, g, b] = levelNameLabel->getColor();
 		CCTintTo* defaultColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), r, g, b);
+		if (!defaultColor) return log::info("unable to create defaultColor for levelNameLabel");
 		auto color = ccColor3B{255, 255, 255};
 		if (featureState == GJFeatureState::Featured) { if (Utils::getBool("recolorFeatured")) { color = ccColor3B{255, 255, 0}; } else return; }
 		else if (featureState == GJFeatureState::Epic) { if (Utils::getBool("recolorEpic")) { color = ccColor3B{255, 90, 75}; } else return; }
@@ -88,8 +90,11 @@ class $modify(MyLevelCell, LevelCell) {
 		else if (featureState == GJFeatureState::Mythic) { if (Utils::getBool("recolorMythic")) { color = ccColor3B{50, 200, 255}; } else return; }
 		if (color.r == 255 && color.g == 255 && color.b == 255) return;
 		CCTintTo* featuredColor = CCTintTo::create(Utils::getDouble("pulsingSpeed"), color.r, color.g, color.b);
+		if (!featuredColor) return log::info("unable to create featuredColor for levelNameLabel");
 		CCActionInterval* sequence = CCSequence::create(defaultColor, featuredColor, nullptr);
+		if (!sequence) return log::info("could not create sequence for levelNameLabel");
 		CCAction* repeat = CCRepeatForever::create(sequence);
+		if (!repeat) return log::info("unable to create repeat for levelNameLabel node");
 		levelNameLabel->runAction(repeat);
 	}
 	static void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
@@ -132,12 +137,15 @@ class $modify(MyLevelCell, LevelCell) {
 				else defaultSongs++;
 			}
 			CCArray* arrayOfSequences = CCArray::create();
+			if (!arrayOfSequences) return log::info("unable to create arrayOfSequences for songLabel node");
 			if ((ncsSongs > 0 || ncs) && Utils::getBool("recolorNCS")) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("ncsColor"));
 			if (defaultSongs > 0 || defaultSongID < 1) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("defaultSongColor"));
 			if (ngSongs > 0) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("newgroundsColor"));
 			if (musicLibrarySongs > 0) addColorToSequence(arrayOfSequences, Utils::getColorAlpha("musicLibraryColor"));
 			CCActionInterval* sequence = CCSequence::create(arrayOfSequences);
+			if (!sequence) return log::info("could not create sequence for songLabel");
 			CCAction* repeat = CCRepeatForever::create(sequence);
+			if (!repeat) return log::info("unable to create repeat for songLabel node");
 			songLabel->runAction(repeat);
 		}
 	}
