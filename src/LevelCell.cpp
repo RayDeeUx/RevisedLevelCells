@@ -269,6 +269,7 @@ class $modify(MyLevelCell, LevelCell) {
 		LevelCell::loadCustomLevelCell();
 		GJGameLevel* level = m_level;
 		if (!Utils::modEnabled() || !m_mainMenu || !level) return;
+		if (CCNode* levelDescButton = m_mainMenu->getChildByID("level-desc-button"_spr); levelDescButton && CCScene::get()->getChildByType<LevelListLayer>(0) && levelDescButton->getPositionY() > -118.f) levelDescButton->setPositionY(levelDescButton->getPositionY() - 40.f);
 		MyLevelCell::determineLevelVisibility(level);
 	}
 	void loadFromLevel(GJGameLevel* level) {
