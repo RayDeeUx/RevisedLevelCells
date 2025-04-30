@@ -177,7 +177,10 @@ class $modify(MyLevelCell, LevelCell) {
 				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
 			});
 		}
-		if (utils::string::endsWith(buttonPosSetting, " Level Cell") || utils::string::endsWith(buttonPosSetting, " Button")) m_mainMenu->addChild(descButton);
+		if (!utils::string::endsWith(buttonPosSetting, " Level Cell") && !utils::string::endsWith(buttonPosSetting, " Button")) return;
+		m_mainMenu->addChild(descButton);
+		if (!CCScene::get()->getChildByType<LevelListLayer>(0)) return;
+		descButton->setPositionY(descButton->getPositionY() - 40.f);
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("blendingText") || !m_mainLayer || m_fields->blendingApplied) return;
