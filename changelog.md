@@ -1,4 +1,8 @@
 # RevisedLevelCells Changelog
+## v1.1.3
+- Fix a nasty bug where level descriptions were misaligned when viewing levels from a level list.
+- Removed `Remove Level List Placement` support for editable level lists.
+- Experimental iOS support.
 ## v1.1.2
 - Some [adjective describing a person] reported a "crash" that shouldn't even be possible, so here we are.
 ## v1.1.1

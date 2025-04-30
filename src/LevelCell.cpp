@@ -292,7 +292,7 @@ class $modify(MyLevelListLayer, LevelListLayer) {
 		bool alreadyMoved = false;
 	};
 	static void removePlacement(const LevelCell* levelCell) {
-		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !levelCell->m_mainMenu || !levelCell->m_mainLayer || levelCell->m_level->m_listPosition == 0) return;
+		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || m_levelList->m_listType == GJLevelType::Editor || !levelCell->m_mainMenu || !levelCell->m_mainLayer || levelCell->m_level->m_listPosition == 0) return;
 		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
 		if (CCNode* placementLabel = levelCell->m_mainLayer->getChildByID("level-place")) placementLabel->setVisible(false);
 		for (CCNode* child : CCArrayExt<CCNode*>(levelCell->m_mainLayer->getChildren())) {
@@ -312,14 +312,14 @@ class $modify(MyLevelListLayer, LevelListLayer) {
 	// need to hook this for when downloading a list for the first time
 	void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) {
 		LevelListLayer::loadLevelsFinished(p0, p1, p2);
-		if (!Utils::getBool("removePlacement")) return;
+		if (!Utils::getBool("removePlacement") || m_levelList->m_listType == GJLevelType::Editor) return;
 		if (!m_list || !m_list->m_listView || !m_list->m_listView->m_tableView || !m_list->m_listView->m_tableView->m_cellArray || !typeinfo_cast<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray->objectAtIndex(0))) return log::info("could not find the place where level cell entries are stored");
 		for (const LevelCell* levelCell : CCArrayExt<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray)) MyLevelListLayer::removePlacement(levelCell);
 	}
 	// need to hook this when exiting the LevelInfoLayer. also the m_fields access prevents moving the nodes more than once between level entry/exiting
 	void onEnter() {
 		LevelListLayer::onEnter();
-		if (!Utils::getBool("removePlacement") || m_fields->alreadyMoved) return;
+		if (!Utils::getBool("removePlacement") || m_levelList->m_listType == GJLevelType::Editor || m_fields->alreadyMoved) return;
 		if (!m_list || !m_list->m_listView || !m_list->m_listView->m_tableView || !m_list->m_listView->m_tableView->m_cellArray || !typeinfo_cast<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray->objectAtIndex(0))) return log::info("could not find the place where level cell entries are stored");
 		m_fields->alreadyMoved = true;
 		for (const LevelCell* levelCell : CCArrayExt<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray)) MyLevelListLayer::removePlacement(levelCell);
