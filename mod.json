@@ -53,7 +53,7 @@
 			"default": {
 				"win": "Bottom Right of \"View\" Button",
 				"mac": "Bottom Right of \"View\" Button",
-				"ios": "Top Left of Level Cell", 
+				"ios": "Top Left of Level Cell",
 				"android": "Top Left of Level Cell"
 			},
 			"one-of": [
