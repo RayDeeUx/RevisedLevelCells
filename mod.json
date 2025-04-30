@@ -3,12 +3,12 @@
 	"gd": {
 		"win": "2.2074",
 		"mac": "2.2074",
-		"android": "2.2074",
-		"ios": "2.2074"
+		"ios": "2.2074",
+		"android": "2.2074"
 	},
 	"id": "raydeeux.revisedlevelcells",
 	"name": "RevisedLevelCells",
-	"version": "v1.1.3",
+	"version": "v1.2.0",
 	"developer": "RayDeeUx",
 	"description": "Revise level cells just a smidge.",
 	"repository": "https://github.com/RayDeeUx/RevisedLevelCells",
