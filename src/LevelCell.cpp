@@ -292,7 +292,7 @@ class $modify(MyLevelListLayer, LevelListLayer) {
 		bool alreadyMoved = false;
 	};
 	static void removePlacement(const LevelCell* levelCell) {
-		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || m_levelList->m_listType == GJLevelType::Editor || !levelCell->m_mainMenu || !levelCell->m_mainLayer || levelCell->m_level->m_listPosition == 0) return;
+		if (!Utils::modEnabled() || !Utils::getBool("removePlacement") || !levelCell->m_mainMenu || !levelCell->m_mainLayer || levelCell->m_level->m_listPosition == 0) return;
 		// consent to reuse code found here: https://discord.com/channels/911701438269386882/911702535373475870/1333235345365532784
 		if (CCNode* placementLabel = levelCell->m_mainLayer->getChildByID("level-place")) placementLabel->setVisible(false);
 		for (CCNode* child : CCArrayExt<CCNode*>(levelCell->m_mainLayer->getChildren())) {
