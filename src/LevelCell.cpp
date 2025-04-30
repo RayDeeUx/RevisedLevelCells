@@ -322,6 +322,7 @@ class $modify(MyLevelListLayer, LevelListLayer) {
 		if (!Utils::modEnabled() || m_levelList->m_listType == GJLevelType::Editor) return;
 		if (!m_list || !m_list->m_listView || !m_list->m_listView->m_tableView || !m_list->m_listView->m_tableView->m_cellArray || !typeinfo_cast<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray->objectAtIndex(0))) return log::info("could not find the place where level cell entries are stored");
 		for (const LevelCell* levelCell : CCArrayExt<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray)) MyLevelListLayer::descButtonRemovePlacement(levelCell);
+		m_fields->alreadyMoved = true;
 	}
 	// need to hook this when exiting the LevelInfoLayer. also the m_fields access prevents moving the nodes more than once between level entry/exiting
 	void onEnter() {
@@ -329,6 +330,5 @@ class $modify(MyLevelListLayer, LevelListLayer) {
 		if (!Utils::modEnabled() || m_levelList->m_listType == GJLevelType::Editor) return;
 		if (!m_list || !m_list->m_listView || !m_list->m_listView->m_tableView || !m_list->m_listView->m_tableView->m_cellArray || !typeinfo_cast<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray->objectAtIndex(0))) return log::info("could not find the place where level cell entries are stored");
 		for (const LevelCell* levelCell : CCArrayExt<LevelCell*>(m_list->m_listView->m_tableView->m_cellArray)) MyLevelListLayer::descButtonRemovePlacement(levelCell);
-		m_fields->alreadyMoved = true;
 	}
 };
