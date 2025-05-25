@@ -228,6 +228,12 @@
 			"type": "bool",
 			"default": true
 		},
+		"friendsAreFavoriteUsers": {
+			"name": "Include Friends List in Favorite Users",
+			"description": "<cy>This will make additional requests to the GD servers. Be careful if you toggle this!</c>",
+			"type": "bool",
+			"default": false
+		},
 		"favoriteUserColor": {
 			"name": "Favorite User Highlight Color",
 			"type": "rgba",
@@ -252,6 +258,12 @@
 		"trulyHideIgnored": {
 			"name": "TRULY Hide Levels/Lists From Ignored People",
 			"description": "<cl>Original idea by Nightcat.</c>\n\n<c_>TRULY</c> hide levels/level lists from people you've ignored.\n<c_>NOTHING</c> about the level/level list will be visible--not the level/list name, the level/list's traits, or buttons from other mods attached to the specific level/list (including buttons from this mod).\n\n<cy>Note that you'll get a blank space where the ignored person's level/list would be, because any other approach risks crashing the game.</c>",
+			"type": "bool",
+			"default": false
+		},
+		"blockedAreIgnoredPeople": {
+			"name": "Treat Blocked Users As Ignored People",
+			"description": "<cy>This will make additional requests to the GD servers. Be careful if you toggle this!</c>",
 			"type": "bool",
 			"default": false
 		},

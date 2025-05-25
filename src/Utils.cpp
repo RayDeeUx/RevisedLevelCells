@@ -78,7 +78,7 @@ namespace Utils {
 		return true;
 	}
 
-	bool updateLists(Manager* manager) {
+	bool updateLists(Manager* manager, Simpleton* simpleton) {
 		manager->dislikedWords.clear();
 		manager->ignoredUsers.clear();
 		manager->favoriteUsers.clear();
@@ -153,6 +153,20 @@ namespace Utils {
 				if (int favoriteUserID = utils::numFromString<int>(favoriteUserStringModified).unwrapOr(-2); favoriteUserID > 0)
 					manager->favoriteUsers.push_back(favoriteUserID);
 			}
+		}
+		if (!Utils::getBool("friendsAreFavoriteUsers") && !Utils::getBool("blockedAreIgnoredPeople")) return true;
+		GameLevelManager* glm = GameLevelManager::get();
+		if (!glm) {
+			log::info("gamelevelmanager not found, oof!");
+			return false;
+		}
+		if (Utils::getBool("friendsAreFavoriteUsers")) {
+			glm->m_userListDelegate = simpleton;
+			glm->getUserList(UserListType::Friends);
+		}
+		if (Utils::getBool("blockedAreIgnoredPeople")) {
+			glm->m_userListDelegate = simpleton;
+			glm->getUserList(UserListType::Blocked);
 		}
 		return true;
 	}

@@ -11,8 +11,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 project(RevisedLevelCells VERSION 1.0.0)
 
 file(GLOB SOURCES
-        src/**.cpp
-        src/**.hpp
+    src/**.cpp
+    src/**.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
