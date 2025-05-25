@@ -38,6 +38,15 @@ class $modify(MyLevelListCell, LevelListCell) {
 		const bool listIsRated = m_levelList->m_diamonds != 0;
 		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || (Utils::getBool("dontHideIfRated") && listIsRated)) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
+		if (Utils::getBool("trulyHideIgnored") && reason == "by Ignored User") {
+			this->setUserObject("truly-ignored-level-list"_spr, CCBool::create(true));
+			this->setPositionX(-65536);
+			this->setPositionY(-65536);
+			this->setZOrder(-65536);
+			this->setVisible(false);
+			this->setScale(.0f);
+			return;
+		}
 		CCMenu* menu = CCMenu::create();
 		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
 		CCMenuItemSpriteExtra* button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(MyLevelListCell::unhideList));

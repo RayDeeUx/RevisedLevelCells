@@ -218,6 +218,16 @@ class $modify(MyLevelCell, LevelCell) {
 		const bool levelIsRated = m_level->m_stars.value() != 0;
 		if (!Utils::modEnabled() || (Utils::getBool("dontHideIfRated") && levelIsRated)) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
+		if (Utils::getBool("trulyHideIgnored") && reason == "by Ignored User") {
+			this->setUserObject("truly-ignored-level"_spr, CCBool::create(true));
+			this->setPositionX(-65536);
+			this->setPositionY(-65536);
+			this->setZOrder(-65536);
+			this->setVisible(false);
+			this->setScale(.0f);
+			return;
+		}
+
 		CCMenu* menu = CCMenu::create();
 		ButtonSprite* buttonSprite = ButtonSprite::create("Show", 56, 30, .75f, false, "bigFont.fnt", "GJ_button_04.png");
 		CCMenuItemSpriteExtra* button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(MyLevelCell::unhideLevel));
