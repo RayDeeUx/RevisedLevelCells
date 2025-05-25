@@ -29,7 +29,7 @@ namespace Utils {
 	void writeToFile(const std::string_view fileName, int accountID, const std::string_view username);
 	bool addIgnoredUser(int accountID, std::string username);
 	bool addFavoriteUser(int accountID, std::string username);
-	bool updateLists(Manager* manager = Manager::getSharedInstance(), Simpleton* simpleton = Simpleton::get());
+	bool updateLists(Manager* manager = Manager::getSharedInstance(), Simpson* simpson = Simpson::get());
 
 	void createButton(const std::string& spriteName, CCNode* target, const SEL_MenuHandler function, const std::string_view purpose, CCNode* parent, const CCPoint& position, const float scale = 1.0f);
 

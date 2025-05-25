@@ -78,7 +78,7 @@ namespace Utils {
 		return true;
 	}
 
-	bool updateLists(Manager* manager, Simpleton* simpleton) {
+	bool updateLists(Manager* manager, Simpson* simpson) {
 		manager->dislikedWords.clear();
 		manager->ignoredUsers.clear();
 		manager->favoriteUsers.clear();
@@ -161,11 +161,11 @@ namespace Utils {
 			return false;
 		}
 		if (Utils::getBool("friendsAreFavoriteUsers")) {
-			glm->m_userListDelegate = simpleton;
+			glm->m_userListDelegate = simpson;
 			glm->getUserList(UserListType::Friends);
 		}
 		if (Utils::getBool("blockedAreIgnoredPeople")) {
-			glm->m_userListDelegate = simpleton;
+			glm->m_userListDelegate = simpson;
 			glm->getUserList(UserListType::Blocked);
 		}
 		return true;
