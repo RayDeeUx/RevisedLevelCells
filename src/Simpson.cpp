@@ -15,7 +15,7 @@ void Simpson::getUserListFinished(cocos2d::CCArray* p0, UserListType p1) {
 			log::info("user ID {} was in existing vector in Manager class, skipping");
 			continue;
 		}
-		log::info("user ID {} was not in existing vector in Manager class, inserting it now");
+		log::info("user ID {} was not in existing vector in Manager class, inserting it now", id);
 		toInsert.push_back(id);
 		toInsertTwo.push_back(id);
 	}
