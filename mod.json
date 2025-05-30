@@ -8,7 +8,7 @@
 	},
 	"id": "raydeeux.revisedlevelcells",
 	"name": "RevisedLevelCells",
-	"version": "v1.2.1",
+	"version": "v1.3.0",
 	"developer": "RayDeeUx",
 	"description": "Revise level cells just a smidge.",
 	"repository": "https://github.com/RayDeeUx/RevisedLevelCells",
@@ -283,6 +283,11 @@
 			"description": "Stops hiding levels/lists if the level/list is rated, regardless of why the level/list should be hidden.",
 			"type": "bool",
 			"default": true
+		},
+		"logging": {
+			"name": "Logging",
+			"type": "bool",
+			"default": false
 		}
 	},
 	"dependencies": {

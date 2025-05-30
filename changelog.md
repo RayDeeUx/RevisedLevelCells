@@ -1,4 +1,8 @@
 # RevisedLevelCells Changelog
+## v1.3.0
+- Added options to treat your friends list in GD as favorite people and your list of blocked users in GD as ignored people.
+- Added options to *truly* hide levels/level lists from ignored people (requested by [Nightcat](https://github.com/Nightcaat)).
+- Added logging options, because why not.
 ## v1.2.1
 - Properly fix the previously mentioned nasty bug where level descriptions were misaligned when viewing levels from a level list, as the previous fix did jack squat.
 ## v1.2.0
