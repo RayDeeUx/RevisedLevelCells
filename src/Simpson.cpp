@@ -23,7 +23,7 @@ void Simpson::getUserListFinished(cocos2d::CCArray* p0, UserListType p1) {
 		toInsertTwo.push_back(id);
 	}
 	if (fetchedBlocked || !Utils::getBool("blockedAreIgnoredPeople")) return log::info("either blocked people have been fetched, or user chose not to fetch blocked people. who knows? oh, right: fetchedBlocked: {}, !Utils::getBool(\"blockedAreIgnoredPeople\"): {}", fetchedBlocked, !Utils::getBool("blockedAreIgnoredPeople"));
-	glm->m_userListDelegate = Simpleton::get();
+	glm->m_userListDelegate = Simpson::get();
 	log::info("finished fetching friends, now fetching UserListType::Blocked");
 	glm->getUserList(UserListType::Blocked);
 }
