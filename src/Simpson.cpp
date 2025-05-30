@@ -5,11 +5,13 @@
 Simpson* Simpson::instance = nullptr;
 
 void Simpson::getUserListFinished(cocos2d::CCArray* p0, UserListType p1) {
-	GameLevelManager::get()->m_userListDelegate = nullptr;
+	GameLevelManager* glm = GameLevelManager::get();
 	Manager* manager = Manager::getSharedInstance();
-	std::vector<int>& toInsert = p1 == UserListType::Blocked ? manager->ignoredUsers : manager->favoriteUsers;
-	std::vector<int>& toInsertTwo = p1 == UserListType::Blocked ? manager->blocked : manager->friends;
-	log::info("——— editing {} users using {} from GD ———", p1 == UserListType::Blocked ? "ignored users" : "favorite users", p1 == UserListType::Blocked ? "blocked users" : "friends list");
+	const bool fetchedBlocked = p1 == UserListType::Blocked;
+	glm->m_userListDelegate = nullptr;
+	std::vector<int>& toInsert = fetchedBlocked ? manager->ignoredUsers : manager->favoriteUsers;
+	std::vector<int>& toInsertTwo = fetchedBlocked ? manager->blocked : manager->friends;
+	log::info("——— editing {} users using {} from GD ———", fetchedBlocked ? "ignored users" : "favorite users", fetchedBlocked ? "blocked list" : "friends list");
 	for (GJUserScore* person : CCArrayExt<GJUserScore*>(p0)) {
 		const int id = person->m_accountID;
 		if (Utils::contains<int>(toInsert, id)) {
@@ -20,6 +22,10 @@ void Simpson::getUserListFinished(cocos2d::CCArray* p0, UserListType p1) {
 		toInsert.push_back(id);
 		toInsertTwo.push_back(id);
 	}
+	if (fetchedBlocked || !Utils::getBool("blockedAreIgnoredPeople")) return log::info("either blocked people have been fetched, or user chose not to fetch blocked people. who knows? oh, right: fetchedBlocked: {}, !Utils::getBool(\"blockedAreIgnoredPeople\"): {}", fetchedBlocked, !Utils::getBool("blockedAreIgnoredPeople"));
+	glm->m_userListDelegate = Simpleton::get();
+	log::info("finished fetching friends, now fetching UserListType::Blocked");
+	glm->getUserList(UserListType::Blocked);
 }
 
 void Simpson::getUserListFailed(UserListType p0, GJErrorCode p1) {

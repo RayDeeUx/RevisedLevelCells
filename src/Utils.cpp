@@ -164,8 +164,7 @@ namespace Utils {
 			glm->m_userListDelegate = simpson;
 			log::info("fetching UserListType::Friends");
 			glm->getUserList(UserListType::Friends);
-		}
-		if (Utils::getBool("blockedAreIgnoredPeople")) {
+		} else if (Utils::getBool("blockedAreIgnoredPeople")) {
 			glm->m_userListDelegate = simpson;
 			log::info("fetching UserListType::Blocked");
 			glm->getUserList(UserListType::Blocked);
