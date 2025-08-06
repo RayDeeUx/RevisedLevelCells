@@ -148,7 +148,7 @@ namespace Utils {
 				std::string ignoredUserStringModified = ignoredUserString;
 				if (ignoredUserStringModified.ends_with(" [RLC] #"))
 					ignoredUserStringModified = ignoredUserStringModified.substr(0, ignoredUserStringModified.find(" # [RLC] Username: "));
-				if (int ignoredUserID = utils::numFromString<int>(ignoredUserStringModified).unwrapOr(-2); ignoredUserID > 0 && ignoredUserID != 71)
+				if (int ignoredUserID = utils::numFromString<int>(ignoredUserStringModified).unwrapOr(-2); ignoredUserID > 0 && ignoredUserID != 71 && ignoredUserID != manager->accountID)
 					manager->ignoredUsers.push_back(ignoredUserID);
 			}
 		}
@@ -172,7 +172,7 @@ namespace Utils {
 				std::string favoriteUserStringModified = favoriteUserString;
 				if (favoriteUserStringModified.ends_with(" [RLC] #"))
 					favoriteUserStringModified = favoriteUserStringModified.substr(0, favoriteUserStringModified.find(" # [RLC] Username: "));
-				if (int favoriteUserID = utils::numFromString<int>(favoriteUserStringModified).unwrapOr(-2); favoriteUserID > 0)
+				if (int favoriteUserID = utils::numFromString<int>(favoriteUserStringModified).unwrapOr(-2); favoriteUserID > 0 && favoriteUserID != manager->accountID)
 					manager->favoriteUsers.push_back(favoriteUserID);
 			}
 		}
@@ -184,11 +184,9 @@ namespace Utils {
 		}
 		if (Utils::getBool("friendsAreFavoriteUsers")) {
 			glm->m_userListDelegate = simpson;
-			log::info("fetching UserListType::Friends");
 			glm->getUserList(UserListType::Friends);
 		} else if (Utils::getBool("blockedAreIgnoredPeople")) {
 			glm->m_userListDelegate = simpson;
-			log::info("fetching UserListType::Blocked");
 			glm->getUserList(UserListType::Blocked);
 		}
 		return true;
