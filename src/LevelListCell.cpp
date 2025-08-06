@@ -62,7 +62,7 @@ class $modify(MyLevelListCell, LevelListCell) {
 
 		label->limitLabelWidth(270.f, 1.f, .001f);
 		if (listIsRated) label->setColor({50, 200, 255});
-		label->setPosition({143.5f, menu->getPositionY()}); // why do i need a ternary for xpos? robtop sucks at ui!!!!
+		label->setPosition({143.5f, menu->getPositionY()});
 
 		menu->setID("unhide-level"_spr);
 		label->setID("hidden-reason"_spr);
