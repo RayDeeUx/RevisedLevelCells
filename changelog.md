@@ -1,4 +1,8 @@
 # RevisedLevelCells Changelog
+## v1.3.1
+- Added song info support for levels using songs from vanilla GD.
+- Added song ID display support for levels using multiple songs.
+- Added slightly stricter account ID enforcement for ignoring/favoriting users.
 ## v1.3.0
 - Added options to treat your friends list in GD as favorite people and your list of blocked users in GD as ignored people.
 - Added options to *truly* hide levels/level lists from ignored people (requested by [Nightcat](https://github.com/Nightcaat)).
