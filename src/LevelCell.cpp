@@ -2,7 +2,6 @@
 #include <Geode/modify/LevelCell.hpp>
 #include "Manager.hpp"
 #include "Utils.hpp"
-#include <regex>
 
 #define PREFERRED_HOOK_PRIO (-3999)
 #define LEVEL_PLACEMENT_OFFSET 20.f
@@ -51,10 +50,14 @@ class $modify(MyLevelCell, LevelCell) {
 		}
 		std::string levelInfo = "(Level info unavailable)";
 		std::string songInfo = "(Song info unavailable)";
-		if (SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID)) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
+		if (SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID); songInfoObject) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
+		else if (SongInfoObject* vanillaSongInfoObject = theLevel->m_audioTrack > -1 ? LevelTools::getSongObject(theLevel->m_audioTrack) : nullptr; vanillaSongInfoObject) songInfo = fmt::format("{} by {}", vanillaSongInfoObject->m_songName, vanillaSongInfoObject->m_artistName);
 		levelInfo = fmt::format("Level ID: <cy>{}</c>\nSong: <cy>{}</c>", theLevel->m_levelID.value(), songInfo);
-		if (!std::string(theLevel->m_songIDs).empty()) levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
-		if (!std::string(theLevel->m_sfxIDs).empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", std::regex_replace(std::string(theLevel->m_sfxIDs), std::regex(","), ", ")));
+		if (!std::string(theLevel->m_songIDs).empty()) {
+			levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
+			levelInfo = levelInfo.append(fmt::format("\nAll Song IDs: <cy>{}</c>", utils::string::replace(std::string(theLevel->m_songIDs), ",", ", ")));
+		}
+		if (!std::string(theLevel->m_sfxIDs).empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", utils::string::replace(std::string(theLevel->m_sfxIDs), ",", ", ")));
 		FLAlertLayer::create(
 			nullptr,
 			theLevel->m_levelName.c_str(),
@@ -159,22 +162,24 @@ class $modify(MyLevelCell, LevelCell) {
 		CCMenuItemSpriteExtra* descButton = CCMenuItemSpriteExtra::create(infoButton, this, menu_selector(MyLevelCell::onShowLevelDesc));
 		descButton->setID("level-desc-button"_spr);
 		const std::string& buttonPosSetting = getInfoButtonLocation();
+		const CCSize mainLayerSize = mainLayer->getContentSize();
 		if (buttonPosSetting == "Bottom Left of Level Cell") {
 			descButton->setPosition({
-				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + 7.5f
+				mainLayer->getPositionX() - (mainLayerSize.width / 2.f) + 7.5f,
+				mainLayer->getPositionY() - (mainLayerSize.height / 2.f) + 7.5f
 			});
 		} else if (buttonPosSetting == "Top Left of Level Cell") {
 			float yOffset = 81.5f;
 			if (m_listType == BoomListType::Level4) yOffset = 41.5f;
 			descButton->setPosition({
-				mainLayer->getPositionX() - (mainLayer->getContentSize().width / 2.f) + 7.5f,
-				mainLayer->getPositionY() - (mainLayer->getContentSize().height / 2.f) + yOffset
+				mainLayer->getPositionX() - (mainLayerSize.width / 2.f) + 7.5f,
+				mainLayer->getPositionY() - (mainLayerSize.height / 2.f) + yOffset
 			});
 		} else {
+			const CCSize viewButtonSize = viewButton->getContentSize();
 			descButton->setPosition({
-				viewButton->getPositionX() + (viewButton->getContentSize().width / 2.f),
-				viewButton->getPositionY() - (viewButton->getContentSize().height / 2.f)
+				viewButton->getPositionX() + (viewButtonSize.width / 2.f),
+				viewButton->getPositionY() - (viewButtonSize.height / 2.f)
 			});
 		}
 		if (!utils::string::endsWith(buttonPosSetting, " Level Cell") && !utils::string::endsWith(buttonPosSetting, " Button")) return;
