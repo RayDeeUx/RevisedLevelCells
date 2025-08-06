@@ -44,14 +44,27 @@ namespace Utils {
 		if (accID <= 0) return Notification::create("Oof! That's an unregistered user.")->show();
 		*/
 		Manager* manager = Manager::getSharedInstance();
-		if (contains<int>(manager->favoriteUsers, accountID)) {
+		if (Utils::contains<int>(manager->favoriteUsers, accountID)) {
 			log::info("tried to ignore user: {} (username: {}) but they are already favorited", accountID, username);
 			FLAlertLayer::create("Oops!", fmt::format("{} is already in your list of <cy>favorite</c> users.\nRevisit your mod settings if you believe this is a mistake.\n--RevisedLevelCells", username), "Close")->show();
 			return false;
 		}
-		if (contains<int>(manager->ignoredUsers, accountID)) {
-			log::info("tried to ingore user: {} (username: {}) but they are already ignored", accountID, username);
+		if (Utils::contains<int>(manager->ignoredUsers, accountID)) {
+			log::info("tried to ignore user: {} (username: {}) but they are already ignored", accountID, username);
 			Notification::create(fmt::format("{} is already ignored.", username))->show();
+			return false;
+		}
+		if (accountID == 71) {
+			Notification::create("Nice try, but you can't ignore RobTop!")->show();
+			return false;
+		}
+		if (accountID < 1) {
+			Notification::create("Oof! That's an unregistered user.")->show();
+			return false;
+		}
+		if (accountID == GJAccountManager::sharedState()->m_accountID || geode::utils::string::toLower(username) == manager->username) {
+			log::info("tried to favorite user: {} (username: {}) but they are the same person as mod user", accountID, username);
+			Notification::create(fmt::format("{} is you!", username))->show();
 			return false;
 		}
 		log::info("ignoring user: {} (username: {})", accountID, username);
@@ -62,14 +75,27 @@ namespace Utils {
 
 	bool addFavoriteUser(int accountID, std::string username) {
 		Manager* manager = Manager::getSharedInstance();
-		if (contains<int>(manager->ignoredUsers, accountID)) {
+		if (Utils::contains<int>(manager->ignoredUsers, accountID)) {
 			log::info("tried to favorite user: {} (username: {}) but they are already ignored", accountID, username);
 			FLAlertLayer::create("Oops!", fmt::format("{} is already in your list of <cr>ignored</c> users.\nRevisit your mod settings if you believe this is a mistake.\n--RevisedLevelCells", username), "Close")->show();
 			return false;
 		}
-		if (contains<int>(manager->favoriteUsers, accountID)) {
+		if (Utils::contains<int>(manager->favoriteUsers, accountID)) {
 			log::info("tried to favorite user: {} (username: {}) but they are already favorited (possibly from friends list)", accountID, username);
 			Notification::create(fmt::format("{} is already a favorite user!", username))->show();
+			return false;
+		}
+		if (accountID == 71) {
+			Notification::create("Nice try, but you can't ignore RobTop!")->show();
+			return false;
+		}
+		if (accountID < 1) {
+			Notification::create("Oof! That's an unregistered user.")->show();
+			return false;
+		}
+		if (accountID == GJAccountManager::sharedState()->m_accountID || geode::utils::string::toLower(username) == manager->username) {
+			log::info("tried to favorite user: {} (username: {}) but they are the same person as mod user", accountID, username);
+			Notification::create(fmt::format("{} is you!", username))->show();
 			return false;
 		}
 		log::info("favoriting user: {} (username: {})", accountID, username);
