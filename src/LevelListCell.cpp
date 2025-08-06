@@ -18,8 +18,10 @@ class $modify(MyLevelListCell, LevelListCell) {
 	}
 	void applyBlendingText() {
 		if (!Utils::modEnabled() || !Utils::getBool("applyToLists") || !Utils::getBool("blendingText") || !m_levelList || !m_mainLayer || m_fields->blendingApplied) return;
-		for (const auto node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
-			if (node->getID() == "cvolton.level-id-api/level-id-label" && Manager::getSharedInstance()->username != utils::string::toLower(m_levelList->m_creatorName)) {
+		const bool listAuthorIsSomeoneElse = Manager::getSharedInstance()->username != utils::string::toLower(m_levelList->m_creatorName);
+		const std::string& levelIDLabel = "cvolton.level-id-api/level-id-label";
+		for (CCNode* node : CCArrayExt<CCNode*>(m_mainLayer->getChildren())) {
+			if (node->getID() == levelIDLabel && listAuthorIsSomeoneElse) {
 				// see https://discord.com/channels/911701438269386882/911702535373475870/1346625863130677370 for context
 				node->setVisible(false);
 				continue;

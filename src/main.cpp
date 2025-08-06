@@ -18,8 +18,8 @@ class $modify(MyMenuLayer, MenuLayer) {
 	bool init() {
 		if (!MenuLayer::init()) return false;
 
-		if (Manager::getSharedInstance()->calledAlready) return true;
-		const auto manager = Manager::getSharedInstance();
+		Manager* manager = Manager::getSharedInstance();
+		if (manager->calledAlready) return true;
 		manager->calledAlready = true;
 
 		GameManager* gm = GameManager::get();

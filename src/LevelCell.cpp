@@ -67,7 +67,7 @@ class $modify(MyLevelCell, LevelCell) {
 			320.f, 1.0f
 		)->show();
 	}
-	static void addColorToSequence(CCArray *arrayOfSequences, const ccColor4B color) {
+	static void addColorToSequence(CCArray* arrayOfSequences, const ccColor4B color) {
 		if (!Utils::modEnabled()) return;
 		arrayOfSequences->addObject(CCTintTo::create(static_cast<float>(Utils::getDouble("songCycleSpeed")), color.r, color.g, color.b));
 	}
@@ -100,7 +100,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!repeat) return log::info("unable to create repeat for levelNameLabel node");
 		levelNameLabel->runAction(repeat);
 	}
-	static void applySongRecoloring(cocos2d::CCLayer* mainLayer, const GJGameLevel* level) {
+	static void applySongRecoloring(CCLayer* mainLayer, const GJGameLevel* level) {
 		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels")) return;
 		CCNode* songName = mainLayer->getChildByIDRecursive("song-name");
 		if (!songName) return;

@@ -1,4 +1,3 @@
-#ifndef GEODE_IS_IOS
 #include <Geode/modify/LikeItemLayer.hpp>
 #include "Manager.hpp"
 #include "Utils.hpp"
@@ -25,7 +24,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		int accountIDTarget = -1;
 		std::string username = "FOOBARBAZ"_spr;
 
-		const auto fields = m_fields.self();
+		Fields* fields = m_fields.self();
 		CCScene* scene = CCScene::get();
 		if (!scene) return log::info("scene was not found? wild imo");
 
@@ -42,7 +41,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		}
 
 		if (accountIDTarget == -1 || username == "FOOBARBAZ"_spr) return;
-		if (accountIDTarget <= 0) return Notification::create("Oof! That's an unregistered user.")->show();
+		if (accountIDTarget < 1) return Notification::create("Oof! That's an unregistered user.")->show();
 		if (utils::string::toLower(username) == Manager::getSharedInstance()->username) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
 
@@ -58,7 +57,7 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		if (!Utils::modEnabled() || (!Utils::getBool("applyToLists") && type == LikeItemType::LevelList) || !m_buttonMenu || !m_mainLayer || (!Utils::getBool("favoriteUsers") && !Utils::getBool("ignorePeople"))) return true;
 		if (!CCScene::get()->getChildByID("LevelListLayer") && !CCScene::get()->getChildByID("LevelInfoLayer")) return true;
 
-		const auto fields = m_fields.self();
+		Fields* fields = m_fields.self();
 		fields->isList = type == LikeItemType::LevelList;
 		fields->itemID = itemID;
 
@@ -69,4 +68,3 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 		return true; // T0D0: InfoLayer hook, add to main-menu node using manual positioning
 	}
 };
-#endif

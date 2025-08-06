@@ -77,7 +77,7 @@ public:
 
 		this->addChild(theMenu);
 
-		for (const auto &node : CCArrayExt<CCNode*>(this->getChildren())) {
+		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) {
 			node->setVisible(!node->getID().empty() && utils::string::startsWith(node->getID(), Mod::get()->getID()));
 		}
 
