@@ -37,7 +37,7 @@ class $modify(MyLevelCell, LevelCell) {
 	void onShowLevelDesc(CCObject*) {
 		if (!Utils::modEnabled()) return;
 		GJGameLevel* theLevel = this->m_level;
-		if (theLevel->m_levelType == GJLevelType::Local || theLevel->m_levelType == GJLevelType::Local) return;
+		if (theLevel->m_levelType == GJLevelType::Editor || theLevel->m_levelType == GJLevelType::Local) return;
 		std::string levelDesc = theLevel->getUnpackedLevelDescription();
 		if (levelDesc.empty()) {
 			if (Utils::doesNodeExistNoParent("provider-popup") || Utils::doesNodeExistNoParent("dogotrigger.level_history/provider-popup")) {
@@ -284,9 +284,10 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!Utils::modEnabled()) return;
 		CCLayer* mainLayer = this->m_mainLayer;
 		if (!mainLayer || !m_level) return;
+		if (level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Local) return;
 		if (Utils::getBool("recolorSongLabels")) MyLevelCell::applySongRecoloring(mainLayer, m_level);
 		if (Utils::getBool("recolorLevelNameFeaturedScore")) MyLevelCell::applyFeatureStateRecoloring(mainLayer);
-		if (Utils::getBool("levelDescriptions") && level->m_levelType != GJLevelType::Editor) MyLevelCell::applyLevelDescriptions(mainLayer);
+		if (Utils::getBool("levelDescriptions")) MyLevelCell::applyLevelDescriptions(mainLayer);
 	}
 	void draw() {
 		LevelCell::draw();
