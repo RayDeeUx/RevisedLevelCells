@@ -20,6 +20,7 @@ public:
 	std::vector<int> friends;
 
 	int userID = -1;
+	int accountID = -1;
 	std::string username = "";
 
 	static Manager* getSharedInstance() {

@@ -57,9 +57,10 @@ class $modify(MyInfoLayer, InfoLayer) {
 			username = m_level->m_creatorName;
 		} else return log::info("unable to fetch author information. m_levelList null: {}, m_level null: {}", m_levelList == nullptr, m_level == nullptr);
 
+		const Manager* manager = Manager::getSharedInstance();
 		if (accountIDTarget == -1 || username == "FOOBARBAZ"_spr) return;
-		if (accountIDTarget <= 0) return Notification::create("Oof! That's an unregistered user.")->show();
-		if (utils::string::toLower(username) == Manager::getSharedInstance()->username || accountIDTarget == GJAccountManager::sharedState()->m_accountID) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
+		if (accountIDTarget < 1) return Notification::create("Oof! That's an unregistered user.")->show();
+		if (utils::string::toLower(username) == manager->username || accountIDTarget == manager->accountID) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
 
 		if (isFavorite) {

@@ -5,6 +5,7 @@
 using namespace geode::prelude;
 
 $on_mod(Loaded) {
+	Manager::getSharedInstance()->accountID = GJAccountManager::get()->m_accountID;
 	(void) Mod::get()->registerCustomSettingType("configdir", &MyButtonSettingV3::parse);
 	(void) Mod::get()->registerCustomSettingType("updatelists", &MyButtonSettingV3::parse);
 	(void) Utils::updateLists();

@@ -39,10 +39,6 @@ namespace Utils {
 	}
 
 	bool addIgnoredUser(int accountID, std::string username) {
-		/*
-		if (accID == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
-		if (accID <= 0) return Notification::create("Oof! That's an unregistered user.")->show();
-		*/
 		Manager* manager = Manager::getSharedInstance();
 		if (Utils::contains<int>(manager->favoriteUsers, accountID)) {
 			log::info("tried to ignore user: {} (username: {}) but they are already favorited", accountID, username);
@@ -62,7 +58,7 @@ namespace Utils {
 			Notification::create("Oof! That's an unregistered user.")->show();
 			return false;
 		}
-		if (accountID == GJAccountManager::sharedState()->m_accountID || geode::utils::string::toLower(username) == manager->username) {
+		if (accountID == manager->accountID || geode::utils::string::toLower(username) == manager->username) {
 			log::info("tried to favorite user: {} (username: {}) but they are the same person as mod user", accountID, username);
 			Notification::create(fmt::format("{} is you!", username))->show();
 			return false;
@@ -93,7 +89,7 @@ namespace Utils {
 			Notification::create("Oof! That's an unregistered user.")->show();
 			return false;
 		}
-		if (accountID == GJAccountManager::sharedState()->m_accountID || geode::utils::string::toLower(username) == manager->username) {
+		if (accountID == manager->accountID || geode::utils::string::toLower(username) == manager->username) {
 			log::info("tried to favorite user: {} (username: {}) but they are the same person as mod user", accountID, username);
 			Notification::create(fmt::format("{} is you!", username))->show();
 			return false;

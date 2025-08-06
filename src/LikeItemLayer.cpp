@@ -40,9 +40,10 @@ class $modify(MyLikeItemLayer, LikeItemLayer) {
 			} else return log::info("tried to ignore the author of a level, but could not find the information. the ID of the level was {}", fields->itemID);
 		}
 
+		const Manager* manager = Manager::getSharedInstance();
 		if (accountIDTarget == -1 || username == "FOOBARBAZ"_spr) return;
 		if (accountIDTarget < 1) return Notification::create("Oof! That's an unregistered user.")->show();
-		if (utils::string::toLower(username) == Manager::getSharedInstance()->username || accountIDTarget == GJAccountManager::sharedState()->m_accountID) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
+		if (utils::string::toLower(username) == manager->username || accountIDTarget == manager->accountID) return Notification::create(fmt::format("Oof! You can't {} yourself.", isFavorite ? "favorite" : "ignore"))->show();
 		if (!isFavorite && accountIDTarget == 71) return Notification::create("Nice try, but you can't ignore RobTop!")->show();
 
 		if (isFavorite) {
