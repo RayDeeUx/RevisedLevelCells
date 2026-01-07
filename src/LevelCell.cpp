@@ -57,14 +57,21 @@ class $modify(MyLevelCell, LevelCell) {
 		}
 		std::string levelInfo = "(Level info unavailable)";
 		std::string songInfo = "(Song info unavailable)";
-		if (SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(theLevel->m_songID); songInfoObject) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, theLevel->m_songID);
-		else if (SongInfoObject* vanillaSongInfoObject = theLevel->m_audioTrack > -1 ? LevelTools::getSongObject(theLevel->m_audioTrack) : nullptr; vanillaSongInfoObject) songInfo = fmt::format("{} by {}", vanillaSongInfoObject->m_songName, vanillaSongInfoObject->m_artistName);
+		const GJGameLevel* savedLevel = GameLevelManager::get()->getSavedLevel(theLevel->m_levelID.value());
+		const bool canUseSavedLevel = savedLevel != nullptr;
+		const bool savedLevelExists = canUseSavedLevel && !savedLevel->m_levelString.empty();
+		const std::string& songIDs = savedLevelExists ? savedLevel->m_songIDs : theLevel->m_songIDs;
+		const std::string& sfxIDs = savedLevelExists ? savedLevel->m_sfxIDs : theLevel->m_sfxIDs;
+		const int defaultSongID = savedLevelExists ? savedLevel->m_songID : theLevel->m_songID;
+		const int audioTrack = savedLevelExists ? savedLevel->m_audioTrack : theLevel->m_audioTrack;
+		if (SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(defaultSongID); songInfoObject) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, defaultSongID);
+		else if (SongInfoObject* vanillaSongInfoObject = audioTrack > -1 ? LevelTools::getSongObject(audioTrack) : nullptr; vanillaSongInfoObject) songInfo = fmt::format("{} by {}", vanillaSongInfoObject->m_songName, vanillaSongInfoObject->m_artistName);
 		levelInfo = fmt::format("Level ID: <cy>{}</c>\nSong: <cy>{}</c>", theLevel->m_levelID.value(), songInfo);
-		if (!std::string(theLevel->m_songIDs).empty()) {
+		if (!songIDs.empty()) {
 			levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
-			levelInfo = levelInfo.append(fmt::format("\nAll Song IDs: <cy>{}</c>", utils::string::replace(std::string(theLevel->m_songIDs), ",", ", ")));
+			levelInfo = levelInfo.append(fmt::format("\nAll Song IDs: <cy>{}</c>", utils::string::replace(songIDs, ",", ", ")));
 		}
-		if (!std::string(theLevel->m_sfxIDs).empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", utils::string::replace(std::string(theLevel->m_sfxIDs), ",", ", ")));
+		if (!sfxIDs.empty()) levelInfo = levelInfo.append(fmt::format("\nSFX IDs: <cy>{}</c>", utils::string::replace(sfxIDs, ",", ", ")));
 		FLAlertLayer::create(
 			nullptr,
 			theLevel->m_levelName.c_str(),
@@ -115,8 +122,10 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!songLabel) return;
 		geode::SeedValueRSV levelIDRSV = level->m_levelID;
 		const GJGameLevel* savedLevel = GameLevelManager::get()->getSavedLevel(levelIDRSV.value());
-		const std::string& songIDs = savedLevel && !savedLevel->m_levelString.empty() ? savedLevel->m_songIDs : level->m_songIDs;
-		const int defaultSongID = savedLevel && !savedLevel->m_levelString.empty() ? savedLevel->m_songID : level->m_songID;
+		const bool canUseSavedLevel = savedLevel != nullptr;
+		const bool savedLevelExists = canUseSavedLevel && !savedLevel->m_levelString.empty();
+		const std::string& songIDs = savedLevelExists ? savedLevel->m_songIDs : level->m_songIDs;
+		const int defaultSongID = savedLevelExists ? savedLevel->m_songID : level->m_songID;
 		const bool ncs = mainLayer->getChildByIDRecursive("ncs-icon");
 		const bool songIDsEmpty = songIDs.empty();
 		const bool defaultSongIsNCSOrML = defaultSongID >= 10000000;
