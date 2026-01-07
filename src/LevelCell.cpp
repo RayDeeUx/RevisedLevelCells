@@ -67,7 +67,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (SongInfoObject* songInfoObject = MusicDownloadManager::sharedState()->getSongInfoObject(defaultSongID); songInfoObject) songInfo = fmt::format("{} by {} [ID: {}]", songInfoObject->m_songName, songInfoObject->m_artistName, defaultSongID);
 		else if (SongInfoObject* vanillaSongInfoObject = audioTrack > -1 ? LevelTools::getSongObject(audioTrack) : nullptr; vanillaSongInfoObject) songInfo = fmt::format("{} by {}", vanillaSongInfoObject->m_songName, vanillaSongInfoObject->m_artistName);
 		levelInfo = fmt::format("Level ID: <cy>{}</c>\nSong: <cy>{}</c>", theLevel->m_levelID.value(), songInfo);
-		if (!songIDs.empty()) {
+		if (!songIDs.empty() && geode::utils::string::contains(songIDs, ',')) {
 			levelInfo = utils::string::replace(levelInfo, "Song", "Primary Song");
 			levelInfo = levelInfo.append(fmt::format("\nAll Song IDs: <cy>{}</c>", utils::string::replace(songIDs, ",", ", ")));
 		}
