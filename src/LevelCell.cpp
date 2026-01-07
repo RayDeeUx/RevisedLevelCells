@@ -299,7 +299,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (!Utils::modEnabled()) return;
 		CCLayer* mainLayer = this->m_mainLayer;
 		if (!mainLayer || !m_level) return;
-		if (level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Local) return;
+		if (level->m_levelType == GJLevelType::Editor || level->m_levelType == GJLevelType::Main) return;
 		if (Utils::getBool("recolorSongLabels")) MyLevelCell::applySongRecoloring(mainLayer, m_level);
 		if (Utils::getBool("recolorLevelNameFeaturedScore")) MyLevelCell::applyFeatureStateRecoloring(mainLayer);
 		if (Utils::getBool("levelDescriptions")) MyLevelCell::applyLevelDescriptions(mainLayer);
@@ -319,7 +319,7 @@ class $modify(MyLevelListLayer, LevelListLayer) {
 		return Utils::getString("levelDescriptionsPosition");
 		#endif
 	}
-	void descButtonRemovePlacement(const LevelCell* levelCell) {
+	static void descButtonRemovePlacement(const LevelCell* levelCell) {
 		if (!Utils::modEnabled() || !levelCell->m_mainMenu || !levelCell->m_mainLayer || levelCell->m_level->m_listPosition == 0) return;
 		CCNode* placementLabel = levelCell->m_mainLayer->getChildByID("level-place");
 		if (!Utils::getBool("removePlacement") || !placementLabel || placementLabel->getUserObject("already-moved-please-stop"_spr)) return;
