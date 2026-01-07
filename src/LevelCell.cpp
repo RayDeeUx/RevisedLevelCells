@@ -35,8 +35,15 @@ class $modify(MyLevelCell, LevelCell) {
 	}
 	void onShowLevelDesc(CCObject*) {
 		if (!Utils::modEnabled()) return;
+		if (CCScene::get() && CCScene::get()->getChildByID("ungeil.higher_or_lower/HLLayer")) {
+			// prevent cheating, i guess
+			FLAlertLayer* aler = FLAlertLayer::create("SIKE!", "You're not getting any hints from here, bucko.", "I Understand");
+			aler->m_noElasticity = true;
+			aler->show();
+			return;
+		}
 		GJGameLevel* theLevel = this->m_level;
-		if (theLevel->m_levelType == GJLevelType::Editor || theLevel->m_levelType == GJLevelType::Local) return;
+		if (theLevel->m_levelType == GJLevelType::Editor || theLevel->m_levelType == GJLevelType::Main) return;
 		std::string levelDesc = theLevel->getUnpackedLevelDescription();
 		if (levelDesc.empty()) {
 			if (Utils::doesNodeExistNoParent("provider-popup") || Utils::doesNodeExistNoParent("dogotrigger.level_history/provider-popup")) {
@@ -101,13 +108,15 @@ class $modify(MyLevelCell, LevelCell) {
 		levelNameLabel->runAction(repeat);
 	}
 	static void applySongRecoloring(CCLayer* mainLayer, const GJGameLevel* level) {
-		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels")) return;
+		if (!Utils::modEnabled() || !Utils::getBool("recolorSongLabels") || !level) return;
 		CCNode* songName = mainLayer->getChildByIDRecursive("song-name");
 		if (!songName) return;
 		const auto songLabel = typeinfo_cast<CCLabelBMFont*>(songName);
 		if (!songLabel) return;
-		const std::string& songIDs = level->m_songIDs;
-		const int defaultSongID = level->m_songID;
+		geode::SeedValueRSV levelIDRSV = level->m_levelID;
+		const GJGameLevel* savedLevel = GameLevelManager::get()->getSavedLevel(levelIDRSV.value());
+		const std::string& songIDs = savedLevel && !savedLevel->m_levelString.empty() ? savedLevel->m_songIDs : level->m_songIDs;
+		const int defaultSongID = savedLevel && !savedLevel->m_levelString.empty() ? savedLevel->m_songID : level->m_songID;
 		const bool ncs = mainLayer->getChildByIDRecursive("ncs-icon");
 		const bool songIDsEmpty = songIDs.empty();
 		const bool defaultSongIsNCSOrML = defaultSongID >= 10000000;
@@ -220,6 +229,7 @@ class $modify(MyLevelCell, LevelCell) {
 		if (Utils::getBool("personalFilter") && utils::string::containsAny(utils::string::toLower(levelName), manager->dislikedWords)) return MyLevelCell::hideLevel("Name has Disliked Word(s)");
 	}
 	void hideLevel(const std::string_view reason) {
+		if (CCScene::get() && CCScene::get()->getChildByID("ungeil.higher_or_lower/HLLayer")) return;
 		const bool levelIsRated = m_level->m_stars.value() != 0;
 		if (!Utils::modEnabled() || (Utils::getBool("dontHideIfRated") && levelIsRated)) return;
 		for (CCNode* node : CCArrayExt<CCNode*>(this->getChildren())) node->setVisible(false);
