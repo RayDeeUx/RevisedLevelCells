@@ -1,4 +1,7 @@
 # RevisedLevelCells Changelog
+## v1.3.2
+- Minor changes to allow fetching a previously saved level's Song IDs and SFX IDs outside of the Saved Levels menu.
+- Fix a minor bug that led to the mod displaying redundant Song ID information if a level uses only one Song ID but at least one SFX ID. 
 ## v1.3.1
 - Added song info support for levels using songs from vanilla GD.
 - Added song ID display support for levels using multiple songs.
