@@ -10,7 +10,7 @@ $on_mod(Loaded) {
 	(void) Mod::get()->registerCustomSettingType("updatelists", &MyButtonSettingV3::parse);
 	(void) Utils::updateLists();
 	Mod::get()->setLoggingEnabled(Utils::getBool("logging"));
-	listenForSettingChanges("logging", [](bool logging){
+	listenForSettingChanges("logging", [](const bool logging){
 		Mod::get()->setLoggingEnabled(logging);
 	});
 }
